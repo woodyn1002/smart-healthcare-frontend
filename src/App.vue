@@ -10,7 +10,7 @@
 
                 <b-collapse id="nav-collapse" is-nav>
                     <b-navbar-nav>
-                        <b-nav-item href="#">대사 관리</b-nav-item>
+                        <b-nav-item to="health">대사 관리</b-nav-item>
                         <b-nav-item href="#">식사 관리</b-nav-item>
                         <b-nav-item href="#">운동 관리</b-nav-item>
                     </b-navbar-nav>

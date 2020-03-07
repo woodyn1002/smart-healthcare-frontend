@@ -4,6 +4,7 @@ import Home from "../components/Home";
 import Register from "../components/Register";
 import Login from "../components/Login";
 import Dashboard from "../components/Dashboard";
+import Health from "../components/Health";
 
 Vue.use(Router);
 
@@ -25,6 +26,10 @@ export default new Router({
         {
             path: '/dashboard',
             component: Dashboard
+        },
+        {
+            path: '/health',
+            component: Health
         },
     ]
 });
