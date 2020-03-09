@@ -7,10 +7,18 @@
                 <b-col class="mb-3" lg="4">
                     <b-calendar block v-model="selectedDate">
                         <div class="d-flex" dir="ltr">
-                            <b-button @click="addMeal" class="ml-auto" variant="outline-primary">
-                                <b-icon-plus></b-icon-plus>
-                                식사 등록
-                            </b-button>
+                            <b-dropdown class="ml-auto" variant="outline-primary">
+                                <template v-slot:button-content>
+                                    <b-icon-plus></b-icon-plus>
+                                    식사 등록
+                                </template>
+                                <b-dropdown-item-button @click="showRecognizeFoodsModal">
+                                    사진으로 등록
+                                </b-dropdown-item-button>
+                                <b-dropdown-item-button @click="showAddMealModal()">
+                                    직접 등록
+                                </b-dropdown-item-button>
+                            </b-dropdown>
                         </div>
                     </b-calendar>
                 </b-col>
@@ -31,12 +39,23 @@
                 </b-col>
             </b-row>
         </b-container>
+        <meals-recognize-foods-modal
+                @confirm="showAddMealModal"
+                ref="recognize-foods-modal"
+        ></meals-recognize-foods-modal>
+        <meals-add-meal-modal
+                ref="add-meal-modal"
+        ></meals-add-meal-modal>
     </b-container>
 </template>
 
 <script>
+    import MealsAddMealModal from "./MealsAddMealModal";
+    import MealsRecognizeFoodsModal from "./MealsRecognizeFoodsModal";
+
     export default {
         name: "meals",
+        components: {MealsRecognizeFoodsModal, MealsAddMealModal},
         data() {
             return {
                 selectedDate: new Date(),
@@ -57,8 +76,11 @@
             }
         },
         methods: {
-            addMeal() {
-
+            showRecognizeFoodsModal() {
+                this.$refs['recognize-foods-modal'].show();
+            },
+            showAddMealModal(dishes) {
+                this.$refs['add-meal-modal'].show(this.selectedDate, dishes);
             },
             editMeal(item) {
                 alert(item.date);
