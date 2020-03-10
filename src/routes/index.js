@@ -6,6 +6,7 @@ import Login from "../components/Login";
 import Dashboard from "../components/Dashboard";
 import Health from "../components/Health";
 import Meals from "../components/Meals";
+import Fitness from "@/components/Fitness";
 
 Vue.use(Router);
 
@@ -35,6 +36,10 @@ export default new Router({
         {
             path: '/meals',
             component: Meals
+        },
+        {
+            path: '/fitness',
+            component: Fitness
         }
     ]
 });
