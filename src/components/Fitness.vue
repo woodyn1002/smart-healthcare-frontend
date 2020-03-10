@@ -42,14 +42,18 @@
                 </b-col>
             </b-row>
         </b-container>
+
+        <fitness-add-fitness-modal ref="add-fitness-modal"></fitness-add-fitness-modal>
     </b-container>
 </template>
 
 <script>
     import timeFormatter from "../utils/time-formatter";
+    import FitnessAddFitnessModal from "@/components/FitnessAddFitnessModal";
 
     export default {
         name: "fitness",
+        components: {FitnessAddFitnessModal},
         data() {
             return {
                 selectedDate: new Date(),
@@ -74,8 +78,8 @@
             showRecognizeExercisesModal() {
 
             },
-            showAddFitnessModal(exercises) {
-                alert(exercises);
+            showAddFitnessModal(fitnessData) {
+                this.$refs['add-fitness-modal'].show(this.selectedDate, fitnessData);
             },
             editFitness(item) {
                 alert(item.date);
