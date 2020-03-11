@@ -21,8 +21,9 @@
                 <p>촬영 가능한 기기를 사용하고, 권한을 허용해주세요.</p>
             </template>
             <template v-else-if="state === states.ready">
-                <p class="lead">준비가 완료되었습니다!</p>
-                <p class="mb-1">운동을 선택해주세요</p>
+                <p class="lead">준비가 완료되었습니다</p>
+                <p class="mb-1" v-if="finishedWithNoCount">운동을 진행하지 않으셨습니다.</p>
+                <p class="mb-1" v-else>운동을 선택해주세요</p>
                 <b-form class="justify-content-center" inline>
                     <b-select :options="exerciseOptions" class="mr-2" v-model="selectedExerciseText"></b-select>
                     <b-button @click="startExercise()" variant="primary">시작</b-button>
@@ -75,7 +76,8 @@
                 startMoment: null,
                 finishMoment: null,
                 timer: null,
-                elapsedTime: 0
+                elapsedTime: 0,
+                finishedWithNoCount: false
             }
         },
         methods: {
@@ -97,8 +99,13 @@
             finishExercise() {
                 clearInterval(this.timer);
 
-                this.state = this.states.finished;
-                this.finishMoment = moment();
+                if (this.count === 0) {
+                    this.state = this.states.ready;
+                    this.finishedWithNoCount = true;
+                } else {
+                    this.state = this.states.finished;
+                    this.finishMoment = moment();
+                }
             },
             handleOk(event) {
                 event.preventDefault();
@@ -126,6 +133,7 @@
                     this.timer = null;
                 }
                 this.elapsedTime = 0;
+                this.finishedWithNoCount = false;
 
                 navigator.mediaDevices.getUserMedia({video: true})
                     .then(mediaStream => {
