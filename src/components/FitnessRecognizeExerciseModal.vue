@@ -2,12 +2,13 @@
     <b-modal @show="reset" ref="modal" title="">
         <div class="camera-view d-flex justify-content-center">
             <b-spinner
+                    class="mb-3"
                     label="Loading camera"
                     style="width: 3rem; height: 3rem;"
-                    v-if="state === states.loadingCamera"
                     variant="primary"
+                    v-if="state === states.loadingCamera"
             ></b-spinner>
-            <video class="camera-stream" ref="video" v-else/>
+            <video class="camera-stream mb-3 d-none" ref="video"/>
         </div>
 
         <div class="text-center">
@@ -132,11 +133,12 @@
 
                         this.$refs.video.srcObject = mediaStream;
                         this.$refs.video.play();
+                        this.$refs.video.classList.remove('d-none');
 
                         this.state = this.states.ready;
                     })
                     .catch(err => {
-                        this.state = this.states.ready;
+                        this.state = this.states.cameraNotFound;
                         console.error(err);
                     });
             }
