@@ -12,7 +12,7 @@
                                     <b-icon-plus></b-icon-plus>
                                     운동 등록
                                 </template>
-                                <b-dropdown-item-button @click="showRecognizeExercisesModal">
+                                <b-dropdown-item-button @click="showRecognizeExerciseModal">
                                     촬영하여 등록
                                 </b-dropdown-item-button>
                                 <b-dropdown-item-button @click="showAddFitnessModal()">
@@ -43,17 +43,24 @@
             </b-row>
         </b-container>
 
-        <fitness-add-fitness-modal ref="add-fitness-modal"></fitness-add-fitness-modal>
+        <fitness-recognize-exercise-modal
+                @confirm="showAddFitnessModal"
+                ref="recognize-exercise-modal"
+        ></fitness-recognize-exercise-modal>
+        <fitness-add-fitness-modal
+                ref="add-fitness-modal"
+        ></fitness-add-fitness-modal>
     </b-container>
 </template>
 
 <script>
     import timeFormatter from "../utils/time-formatter";
     import FitnessAddFitnessModal from "@/components/FitnessAddFitnessModal";
+    import FitnessRecognizeExerciseModal from "@/components/FitnessRecognizeExerciseModal";
 
     export default {
         name: "fitness",
-        components: {FitnessAddFitnessModal},
+        components: {FitnessRecognizeExerciseModal, FitnessAddFitnessModal},
         data() {
             return {
                 selectedDate: new Date(),
@@ -75,8 +82,8 @@
             formatSeconds(time) {
                 return timeFormatter.formatSeconds(time);
             },
-            showRecognizeExercisesModal() {
-
+            showRecognizeExerciseModal() {
+                this.$refs['recognize-exercise-modal'].show();
             },
             showAddFitnessModal(fitnessData) {
                 this.$refs['add-fitness-modal'].show(this.selectedDate, fitnessData);

@@ -1,5 +1,5 @@
 <template>
-    <b-modal @show="reset" ref="modal" title="운동 등록">
+    <b-modal @hide="reset" ref="modal" title="운동 등록">
         <b-form @submit.stop.prevent="addFitness">
             <b-form-group label="운동 종목" label-for="exercise-text-input">
                 <b-form-input
@@ -31,6 +31,7 @@
                         <b-form-timepicker
                                 @input="updateFitnessData()"
                                 hide-header
+                                show-seconds
                                 id="start-time-input"
                                 v-model="form.startTime"
                         ></b-form-timepicker>
@@ -41,6 +42,7 @@
                         <b-form-timepicker
                                 @input="updateFitnessData()"
                                 hide-header
+                                show-seconds
                                 id="finish-time-input"
                                 v-model="form.finishTime"
                         ></b-form-timepicker>
@@ -106,10 +108,13 @@
                 if (fitnessData) {
                     this.exerciseName = fitnessData.exerciseName;
                     this.form.count = fitnessData.count;
-                    this.form.elapsedTime = fitnessData.elapsedTime;
+                    this.form.startTime = fitnessData.startMoment.format('HH:mm:ss');
+                    this.form.finishTime = fitnessData.finishMoment.format('HH:mm:ss');
 
-                    let exercise = this.exercises.find(exercise => exercise.text === this.form.exerciseText);
+                    let exercise = this.exercises.find(exercise => exercise.name === this.exerciseName);
                     this.form.exerciseText = exercise.text;
+
+                    this.updateFitnessData();
                 }
             },
             hide() {

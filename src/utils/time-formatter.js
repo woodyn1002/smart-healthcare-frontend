@@ -7,7 +7,7 @@ class TimeFormatter {
         let strings = [];
         if (hours > 0) strings.push(hours + '시간');
         if (minutes > 0) strings.push(minutes + '분');
-        if (seconds > 0) strings.push(seconds + '초');
+        if (seconds > 0 || strings.length === 0) strings.push(seconds + '초');
 
         return strings.join(' ');
     }
