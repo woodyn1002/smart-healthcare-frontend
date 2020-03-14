@@ -23,9 +23,12 @@
                     </b-calendar>
                 </b-col>
                 <b-col>
-                    <b-table :fields="fitnessList.fields" :items="fitnessList.items" hover striped>
+                    <b-table :fields="fitnessTableFields" :items="fitnessList" hover striped>
+                        <template v-slot:cell(date)="data">
+                            {{ formatDate(data.value) }}
+                        </template>
                         <template v-slot:cell(exercise)="data">
-                            {{ data.value }} {{ data.item.count }}회, {{ formatSeconds(data.item.elapsedTime) }}
+                            {{ data.value.name }} {{ data.item.count }}회, {{ formatSeconds(data.item.elapsedTime) }}
                         </template>
                         <template v-slot:cell(burntCalories)="data">
                             {{ data.value }}kcal
@@ -54,9 +57,13 @@
 </template>
 
 <script>
-    import timeFormatter from "../utils/time-formatter";
+    import moment from "moment";
+    import "moment/locale/ko";
+    import * as timeFormatter from "../utils/time-formatter";
     import FitnessAddFitnessModal from "@/components/FitnessAddFitnessModal";
     import FitnessRecognizeExerciseModal from "@/components/FitnessRecognizeExerciseModal";
+
+    const dateFormat = 'A h[시] mm[분]';
 
     export default {
         name: "fitness",
@@ -64,23 +71,21 @@
         data() {
             return {
                 selectedDate: new Date(),
-                fitnessList: {
-                    fields: [
-                        {'key': 'date', 'label': '일시'},
-                        {'key': 'exercise', 'label': '종목'},
-                        {'key': 'burntCalories', 'label': '소모 열량'},
-                        {'key': 'buttons', 'label': ''}
-                    ],
-                    items: [
-                        {date: '오후 4시 20분', exercise: '팔굽혀펴기', count: 10, elapsedTime: 60, burntCalories: 230},
-                        {date: '오후 4시 20분', exercise: '스쿼트', count: 19, elapsedTime: 98, burntCalories: 300}
-                    ]
-                }
+                fitnessTableFields: [
+                    {'key': 'date', 'label': '일시'},
+                    {'key': 'exercise', 'label': '종목'},
+                    {'key': 'burntCalories', 'label': '소모 열량'},
+                    {'key': 'buttons', 'label': ''}
+                ],
+                fitnessList: []
             }
         },
         methods: {
             formatSeconds(time) {
                 return timeFormatter.formatSeconds(time);
+            },
+            formatDate(date) {
+                return moment(date).format(dateFormat);
             },
             showRecognizeExerciseModal() {
                 this.$refs['recognize-exercise-modal'].show();
@@ -93,6 +98,24 @@
             },
             deleteFitness(item) {
                 alert(item.date);
+            }
+        },
+        created() {
+            this.fitnessList = [
+                {date: new Date().toISOString(), exerciseId: 'push-up', count: 10, elapsedTime: 20, burntCalories: 10},
+                {date: new Date().toISOString(), exerciseId: 'squat', count: 10, elapsedTime: 20, burntCalories: 10}
+            ];
+
+            let exercises = [
+                {id: 'push-up', name: '팔굽혀펴기', met: 3.8},
+                {id: 'squat', name: '스쿼트', met: 3.5}
+            ];
+
+            for (let fitness of this.fitnessList) {
+                let exercise = exercises.find(exercise => exercise.id === fitness.exerciseId);
+                if (!exercise) exercise = {name: '존재하지 않는 운동'};
+
+                fitness.exercise = exercise;
             }
         }
     }

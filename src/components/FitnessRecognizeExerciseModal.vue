@@ -1,42 +1,44 @@
 <template>
-    <b-modal @show="reset" ref="modal" title="">
+    <b-modal ref="modal" title="">
         <div class="camera-view d-flex justify-content-center">
             <b-spinner
                     class="mb-3"
                     label="Loading camera"
                     style="width: 3rem; height: 3rem;"
+                    v-if="recognizing.state === states.loadingCamera"
                     variant="primary"
-                    v-if="state === states.loadingCamera"
             ></b-spinner>
             <video class="camera-stream mb-3 d-none" ref="video"/>
         </div>
 
         <div class="text-center">
-            <template v-if="state === states.loadingCamera">
+            <template v-if="recognizing.state === states.loadingCamera">
                 <p class="lead">잠시만 기다려주세요</p>
                 <p>카메라를 불러오는 중입니다...</p>
             </template>
-            <template v-else-if="state === states.cameraNotFound">
+            <template v-else-if="recognizing.state === states.cameraNotFound">
                 <p class="lead">카메라를 불러올 수 없습니다.</p>
                 <p>촬영 가능한 기기를 사용하고, 권한을 허용해주세요.</p>
             </template>
-            <template v-else-if="state === states.ready">
-                <p class="lead">준비가 완료되었습니다</p>
-                <p class="mb-1" v-if="finishedWithNoCount">운동을 진행하지 않으셨습니다.</p>
+            <template v-else-if="recognizing.state === states.ready">
+                <p class="lead">준비가 완료되었습니다!</p>
+                <p class="mb-1" v-if="recognizing.finishedWithNoCount">운동을 진행하지 않으셨습니다.</p>
                 <p class="mb-1" v-else>운동을 선택해주세요</p>
                 <b-form class="justify-content-center" inline>
-                    <b-select :options="exerciseOptions" class="mr-2" v-model="selectedExerciseText"></b-select>
+                    <b-select :options="exerciseOptions" class="mr-2"
+                              v-model="recognizing.selectedExerciseName"></b-select>
                     <b-button @click="startExercise()" variant="primary">시작</b-button>
                 </b-form>
             </template>
-            <template v-else-if="state === states.recognizing">
-                <p class="lead">{{ selectedExercise.text }} 인식 중...</p>
-                <p>{{ formatSeconds(elapsedTime) }} 소요, {{ count }}회 실시</p>
+            <template v-else-if="recognizing.state === states.recognizing">
+                <p class="lead">{{ selectedExercise.name }} 인식 중...</p>
+                <p>{{ formattedElapsedTime }} 소요, {{ recognizing.count }}회 실시</p>
                 <b-button @click="finishExercise()" variant="primary">운동 종료</b-button>
             </template>
-            <template v-else-if="state === states.finished">
+            <template v-else-if="recognizing.state === states.finished">
                 <p class="lead">운동을 마쳤습니다</p>
-                <p>{{ selectedExercise.text }} {{ count }}회, {{ formatSeconds(elapsedTime) }}</p>
+                <p>{{ selectedExercise.name }} {{ recognizing.count }}회, {{ formatSeconds(recognizing.elapsedTime)
+                    }}</p>
             </template>
         </div>
 
@@ -44,7 +46,7 @@
             <b-button @click="cancel()">
                 취소
             </b-button>
-            <b-button :disabled="state !== states.finished" @click="handleOk" variant="primary">
+            <b-button :disabled="recognizing.state !== states.finished" @click="handleOk" variant="primary">
                 등록
             </b-button>
         </template>
@@ -52,8 +54,22 @@
 </template>
 
 <script>
-    import timeFormatter from "../utils/time-formatter";
+    import * as timeFormatter from "../utils/time-formatter";
     import moment from "moment";
+
+    function defaultRecognizingData() {
+        return {
+            state: 'loadingCamera',
+            mediaStream: null,
+            selectedExerciseName: '',
+            count: 0,
+            startMoment: null,
+            finishMoment: null,
+            timer: null,
+            elapsedTime: 0,
+            finishedWithNoCount: false
+        }
+    }
 
     export default {
         name: "fitness-recognize-exercise-modal",
@@ -68,43 +84,63 @@
                     recognizing: 'recognizing',
                     finished: 'finished'
                 },
-                state: '',
-                mediaStream: null,
-                selectedExercise: undefined,
-                selectedExerciseText: '',
-                count: 0,
-                startMoment: null,
-                finishMoment: null,
-                timer: null,
-                elapsedTime: 0,
-                finishedWithNoCount: false
+                recognizing: defaultRecognizingData()
+            }
+        },
+        computed: {
+            selectedExercise() {
+                return this.exercises.find(exercise => exercise.name === this.recognizing.selectedExerciseName);
+            },
+            formattedElapsedTime() {
+                return timeFormatter.formatSeconds(this.recognizing.elapsedTime);
             }
         },
         methods: {
-            formatSeconds(time) {
-                return timeFormatter.formatSeconds(time);
+            resetRecognizingData() {
+                if (this.recognizing && this.recognizing.timer) {
+                    clearInterval(this.recognizing.timer);
+                }
+                this.recognizing = defaultRecognizingData();
             },
             show() {
+                this.resetRecognizingData();
+
                 this.$refs['modal'].show();
+
+                navigator.mediaDevices.getUserMedia({video: true})
+                    .then(mediaStream => {
+                        this.recognizing.mediaStream = mediaStream;
+
+                        this.$refs.video.srcObject = mediaStream;
+                        this.$refs.video.play();
+
+                        this.recognizing.state = this.states.ready;
+                    })
+                    .catch(err => {
+                        this.recognizing.state = this.states.cameraNotFound;
+                        console.error(err);
+                    });
             },
             hide() {
                 this.$refs['modal'].hide();
             },
             startExercise() {
-                this.selectedExercise = this.exercises.find(exercise => exercise.text === this.selectedExerciseText);
-                this.state = this.states.recognizing;
-                this.startMoment = moment();
-                this.timer = setInterval(() => this.elapsedTime++, 1000);
+                this.recognizing.state = this.states.recognizing;
+                this.recognizing.count = 0;
+                this.recognizing.startMoment = moment();
+                this.recognizing.elapsedTime = 0;
+                this.recognizing.timer = setInterval(() => this.recognizing.elapsedTime++, 1000);
             },
             finishExercise() {
-                clearInterval(this.timer);
+                clearInterval(this.recognizing.timer);
 
-                if (this.count === 0) {
-                    this.state = this.states.ready;
-                    this.finishedWithNoCount = true;
+                this.recognizing.finishedWithNoCount = (this.recognizing.count === 0);
+
+                if (this.recognizing.finishedWithNoCount) {
+                    this.recognizing.state = this.states.ready;
                 } else {
-                    this.state = this.states.finished;
-                    this.finishMoment = moment();
+                    this.recognizing.state = this.states.finished;
+                    this.recognizing.finishMoment = moment();
                 }
             },
             handleOk(event) {
@@ -113,50 +149,21 @@
             },
             confirmExercise() {
                 let fitnessData = {
-                    exerciseName: this.selectedExercise.name,
-                    count: this.count,
-                    startMoment: this.startMoment,
-                    finishMoment: this.finishMoment
+                    exercise: this.selectedExercise,
+                    count: this.recognizing.count,
+                    startMoment: this.recognizing.startMoment,
+                    finishMoment: this.recognizing.finishMoment
                 };
                 this.$emit('confirm', fitnessData);
                 this.hide();
-            },
-            reset() {
-                this.state = this.states.loadingCamera;
-                this.selectedExercise = '';
-                this.selectedExerciseText = '';
-                this.count = 0;
-                this.startMoment = null;
-                this.finishMoment = null;
-                if (this.timer) {
-                    clearInterval(this.timer);
-                    this.timer = null;
-                }
-                this.elapsedTime = 0;
-                this.finishedWithNoCount = false;
-
-                navigator.mediaDevices.getUserMedia({video: true})
-                    .then(mediaStream => {
-                        this.mediaStream = mediaStream;
-
-                        this.$refs.video.srcObject = mediaStream;
-                        this.$refs.video.play();
-                        this.$refs.video.classList.remove('d-none');
-
-                        this.state = this.states.ready;
-                    })
-                    .catch(err => {
-                        this.state = this.states.cameraNotFound;
-                        console.error(err);
-                    });
             }
         },
-        mounted() {
+        created() {
             this.exercises = [
-                {name: 'push-up', text: '팔굽혀펴기', met: 3.8},
-                {name: 'squat', text: '스쿼트', met: 3.5}
+                {id: 'push-up', name: '팔굽혀펴기', met: 3.8},
+                {id: 'squat', name: '스쿼트', met: 3.5}
             ];
-            this.exerciseOptions = this.exercises.map(exercise => exercise.text);
+            this.exerciseOptions = this.exercises.map(exercise => exercise.name);
         }
     }
 </script>
