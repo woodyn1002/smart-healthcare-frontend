@@ -82,7 +82,7 @@
         },
         methods: {
             formatSeconds(time) {
-                return timeFormatter.formatSeconds(time);
+                return timeFormatter.simplify(time);
             },
             formatDate(date) {
                 return moment(date).format(dateFormat);

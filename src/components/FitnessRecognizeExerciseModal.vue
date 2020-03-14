@@ -37,7 +37,7 @@
             </template>
             <template v-else-if="recognizing.state === states.finished">
                 <p class="lead">운동을 마쳤습니다</p>
-                <p>{{ selectedExercise.name }} {{ recognizing.count }}회, {{ formatSeconds(recognizing.elapsedTime)
+                <p>{{ selectedExercise.name }} {{ recognizing.count }}회, {{ simplify(recognizing.elapsedTime)
                     }}</p>
             </template>
         </div>
@@ -92,7 +92,7 @@
                 return this.exercises.find(exercise => exercise.name === this.recognizing.selectedExerciseName);
             },
             formattedElapsedTime() {
-                return timeFormatter.formatSeconds(this.recognizing.elapsedTime);
+                return timeFormatter.simplify(this.recognizing.elapsedTime);
             }
         },
         methods: {
