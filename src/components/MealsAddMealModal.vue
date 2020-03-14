@@ -1,6 +1,6 @@
 <template>
-    <b-modal @show="reset" ref="modal" title="식사 등록">
-        <b-form @submit.stop.prevent="addMeal">
+    <b-modal ref="modal" title="식사 등록">
+        <b-form @submit.stop.prevent="addMeal()">
             <b-card class="mb-3">
                 <b-table
                         :fields="dishesFields"
@@ -20,7 +20,7 @@
                     </template>
 
                     <template v-slot:cell(foodName)="data">
-                        {{ foods.find(food => food.name === data.value).text }}
+                        {{ data.item.food.name }}
                     </template>
                     <template v-slot:cell(totalCalories)="data">
                         {{ data.value }}kcal
@@ -32,7 +32,7 @@
                     </template>
 
                     <template v-slot:table-caption>
-                        총 {{ form.dishes.map(dish => dish.totalCalories).reduce((acc, cur) => acc + cur, 0) }}kcal
+                        총 {{ totalMealCalories }}kcal
                     </template>
                 </b-table>
                 <b-form inline>
@@ -44,7 +44,7 @@
                             list="food-list"
                             placeholder="음식을 입력해주세요"
                             size="sm"
-                            v-model="newDish.option"
+                            v-model="form.newDish.option"
                     ></b-input>
                     <b-datalist :options="foodOptions" id="food-list"></b-datalist>
                     <b-form-spinbutton
@@ -54,9 +54,9 @@
                             min="0"
                             size="sm"
                             step="0.25"
-                            v-model="newDish.amount"
+                            v-model="form.newDish.amount"
                     ></b-form-spinbutton>
-                    <b-button @click="addDish" class="ml-auto" size="sm">추가</b-button>
+                    <b-button @click="addDish()" class="ml-auto" size="sm">추가</b-button>
                 </b-form>
             </b-card>
 
@@ -70,7 +70,6 @@
                 </template>
                 <b-form-input
                         id="location-input"
-                        required
                         v-model="form.location"
                 ></b-form-input>
             </b-form-group>
@@ -101,20 +100,24 @@
 </template>
 
 <script>
+    function defaultFormData() {
+        return {
+            date: null,
+            location: '',
+            satisfactionScore: 2,
+            dishes: [],
+            newDish: {
+                foodName: '',
+                amount: 1
+            }
+        };
+    }
+
     export default {
         name: "meals-add-meal-modal",
         data() {
             return {
-                form: {
-                    date: null,
-                    location: '',
-                    satisfactionScore: 2,
-                    dishes: []
-                },
-                newDish: {
-                    option: '',
-                    amount: 1
-                },
+                form: defaultFormData(),
                 dishesFields: [
                     {key: 'foodName', label: '음식'},
                     {key: 'amount', label: '양'},
@@ -125,16 +128,32 @@
                 foods: []
             }
         },
+        computed: {
+            totalMealCalories() {
+                return this.form.dishes
+                    .map(dish => dish.totalCalories)
+                    .reduce((acc, cur) => acc + cur, 0);
+            }
+        },
         methods: {
-            show(date, dishes) {
+            resetFormData() {
+                this.form = defaultFormData();
+            },
+            show(date, foods) {
+                this.resetFormData();
+
                 this.$refs['modal'].show();
 
                 this.form.date = date;
-                if (dishes) {
-                    this.form.dishes = dishes;
-                    for (let dish of this.form.dishes) {
-                        let food = this.foods.find(food => food.name === dish.foodName);
-                        dish.totalCalories = food.calories * dish.amount;
+                if (foods) {
+                    for (let food of foods) {
+                        let dish = {
+                            foodId: food.id,
+                            food: food,
+                            amount: 1,
+                            totalCalories: food.calories
+                        };
+                        this.form.dishes.push(dish);
                     }
                 }
             },
@@ -146,19 +165,20 @@
                 this.addMeal();
             },
             addDish() {
-                if (this.newDish.amount <= 0) return alert('알맞는 양을 입력해주세요!');
+                if (this.form.newDish.amount <= 0) return alert('알맞는 양을 입력해주세요!');
 
-                let food = this.foods.find(food => food.text === this.newDish.option);
+                let food = this.foods.find(food => food.name === this.form.newDish.option);
                 if (!food) return alert('음식을 찾을 수 없습니다!');
 
-                let amount = this.newDish.amount;
+                let amount = this.form.newDish.amount;
                 this.form.dishes.push({
-                    foodName: food.name,
+                    foodId: food.id,
+                    food: food,
                     amount: amount,
                     totalCalories: food.calories * amount
                 });
 
-                this.newDish = {
+                this.form.newDish = {
                     option: '',
                     amount: 1
                 };
@@ -167,27 +187,25 @@
                 this.form.dishes.splice(this.form.dishes.indexOf(dish), 1);
             },
             addMeal() {
-                alert(this.form.date);
-            },
-            reset() {
-                this.form = {
-                    date: '',
-                    location: '',
-                    satisfactionScore: 2,
-                    dishes: []
+                let body = {
+                    date: this.form.date,
+                    satisfactionScore: this.form.satisfactionScore,
+                    dishes: [],
                 };
-                this.newDish = {
-                    option: '',
-                    amount: 1
-                };
+                if (this.form.location !== '')
+                    body.location = this.form.location;
+                for (let dish of this.form.dishes)
+                    body.dishes.push({foodId: dish.foodId, amount: dish.amount});
+
+                alert(JSON.stringify(body));
             }
         },
-        mounted() {
+        created() {
             this.foods = [
-                {name: 'kimchi-soup', text: '김치찌개', calories: 456},
-                {name: 'rice', text: '밥 한 공기', calories: 300}
+                {id: 'kimchi-soup', name: '김치찌개', calories: 456},
+                {id: 'rice', name: '쌀밥', calories: 313}
             ];
-            this.foodOptions = this.foods.map(food => food.text);
+            this.foodOptions = this.foods.map(food => food.name);
         }
     }
 </script>

@@ -23,9 +23,15 @@
                     </b-calendar>
                 </b-col>
                 <b-col>
-                    <b-table :fields="meals.fields" :items="meals.items" hover striped>
-                        <template v-slot:cell(calories)="data">
-                            {{ data.value }} kcal
+                    <b-table :fields="mealsTableFields" :items="meals" hover striped>
+                        <template v-slot:cell(date)="data">
+                            {{ formatDate(data.value) }}
+                        </template>
+                        <template v-slot:cell(dishes)="data">
+                            {{ data.value.map(dish => dish.food.name).join(', ') }}
+                        </template>
+                        <template v-slot:cell(totalCalories)="data">
+                            {{ data.value }}kcal
                         </template>
                         <template v-slot:cell(buttons)="data">
                             <b-button @click="editMeal(data.item)" class="m-1" size="sm">
@@ -50,8 +56,12 @@
 </template>
 
 <script>
+    import moment from "moment";
+    import "moment/locale/ko";
     import MealsAddMealModal from "./MealsAddMealModal";
     import MealsRecognizeFoodsModal from "./MealsRecognizeFoodsModal";
+
+    const dateFormat = 'A h[시] mm[분]';
 
     export default {
         name: "meals",
@@ -59,34 +69,58 @@
         data() {
             return {
                 selectedDate: new Date(),
-                meals: {
-                    fields: [
-                        {'key': 'date', 'label': '일시'},
-                        {'key': 'foods', 'label': '음식'},
-                        {'key': 'calories', 'label': '열량'},
-                        {'key': 'buttons', 'label': ''}
-                    ],
-                    items: [
-                        {date: '오후 4시 20분', foods: '김치찌개, 밥, 삼겹살, 상추', calories: 600},
-                        {date: '오후 4시 20분', foods: '김치찌개, 밥', calories: 600},
-                        {date: '오후 4시 20분', foods: '김치찌개, 밥', calories: 600},
-                        {date: '오후 4시 20분', foods: '김치찌개, 밥', calories: 600}
-                    ]
-                }
+                mealsTableFields: [
+                    {'key': 'date', 'label': '일시'},
+                    {'key': 'dishes', 'label': '음식'},
+                    {'key': 'totalCalories', 'label': '열량'},
+                    {'key': 'buttons', 'label': ''}
+                ],
+                meals: []
             }
         },
         methods: {
+            formatDate(date) {
+                return moment(date).format(dateFormat);
+            },
             showRecognizeFoodsModal() {
                 this.$refs['recognize-foods-modal'].show();
             },
-            showAddMealModal(dishes) {
-                this.$refs['add-meal-modal'].show(this.selectedDate, dishes);
+            showAddMealModal(foods) {
+                this.$refs['add-meal-modal'].show(this.selectedDate, foods);
             },
             editMeal(item) {
                 alert(item.date);
             },
             deleteMeal(item) {
                 alert(item.date);
+            }
+        },
+        created() {
+            this.meals = [
+                {
+                    date: new Date().toISOString(),
+                    location: '집',
+                    satisfactionScore: 2,
+                    dishes: [{foodId: 'kimchi-soup', amount: 1}, {foodId: 'rice', amount: 1}]
+                },
+                {date: new Date().toISOString(), dishes: [{foodId: 'kimchi-soup', amount: 1}]}
+            ];
+
+            let foods = [
+                {id: 'kimchi-soup', name: '김치찌개', calories: 456},
+                {id: 'rice', name: '쌀밥', calories: 313}
+            ];
+
+            for (let meal of this.meals) {
+                let totalCalories = 0;
+                for (let dish of meal.dishes) {
+                    let food = foods.find(food => food.id === dish.foodId);
+                    if (!food) food = {name: '존재하지 않는 음식'};
+
+                    dish.food = food;
+                    totalCalories += food.calories * dish.amount;
+                }
+                meal.totalCalories = totalCalories;
             }
         }
     }

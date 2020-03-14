@@ -1,21 +1,24 @@
 <template>
-    <b-modal @show="reset" ref="modal" title="사진 업로드">
-        <b-form @submit.stop.prevent="recognizeFoods" class="mb-2">
+    <b-modal ref="modal" title="사진 업로드">
+        <b-form @submit.stop.prevent="recognizeFoods()" class="mb-2">
             <b-form-file
-                    @change="reset"
+                    @change="resetRecognizingData()"
                     accept="image/*"
                     browse-text="불러오기"
                     drop-placeholder="이미지를 드랍하세요"
                     id="file-input"
                     placeholder="이미지를 업로드하세요"
-                    v-model="selectedFile"
+                    v-model="recognizing.file"
             ></b-form-file>
         </b-form>
 
-        <template v-if="uploaded">
+        <template v-if="recognizing.state >= states.uploading">
             <hr/>
-            <b-img class="mb-3" fluid ref="preview-image"></b-img>
-            <p class="lead text-center">인식 결과: 김치찌개</p>
+            <b-img :src="recognizing.fileSrc" class="mb-3" fluid></b-img>
+        </template>
+
+        <template v-if="recognizing.state === states.finished">
+            <p class="lead text-center">인식 결과: {{ foods.map(food => food.name).join(', ') }}</p>
             <p class="text-center">결과가 옳다면 등록 버튼을 눌러주세요.</p>
         </template>
 
@@ -24,20 +27,26 @@
                 취소
             </b-button>
 
-            <template v-if="uploaded">
-                <b-button :disabled="!selectedFile" @click="handleOk" variant="primary">
-                    등록
+            <template v-if="recognizing.state === states.ready">
+                <b-button :disabled="!recognizing.file" @click="handleOk" variant="primary">
+                    인식
                 </b-button>
             </template>
-            <template v-else-if="uploading">
+            <template v-else-if="recognizing.state === states.uploading">
                 <b-button disabled variant="primary">
                     <b-spinner small></b-spinner>
                     업로드 중...
                 </b-button>
             </template>
-            <template v-else>
-                <b-button :disabled="!selectedFile" @click="handleOk" variant="primary">
-                    인식
+            <template v-else-if="recognizing.state === states.estimating">
+                <b-button disabled variant="primary">
+                    <b-spinner small></b-spinner>
+                    인식 중...
+                </b-button>
+            </template>
+            <template v-else-if="recognizing.state === states.finished">
+                <b-button @click="handleOk" variant="primary">
+                    등록
                 </b-button>
             </template>
         </template>
@@ -45,18 +54,35 @@
 </template>
 
 <script>
+    function defaultRecognizingData() {
+        return {
+            state: 0,
+            file: null,
+            fileSrc: '',
+            foods: []
+        }
+    }
+
     export default {
         name: "meals-recognize-foods-modal",
         data() {
             return {
-                selectedFile: null,
-                uploading: false,
-                uploaded: false,
-                dishes: [{foodName: 'kimchi-soup', amount: 1}]
+                states: {
+                    ready: 0,
+                    uploading: 1,
+                    estimating: 2,
+                    finished: 3
+                },
+                recognizing: defaultRecognizingData()
             }
         },
         methods: {
+            resetRecognizingData() {
+                this.recognizing = defaultRecognizingData();
+            },
             show() {
+                this.resetRecognizingData();
+
                 this.$refs['modal'].show();
             },
             hide() {
@@ -65,32 +91,32 @@
             handleOk(event) {
                 event.preventDefault();
 
-                if (this.uploaded) {
-                    this.confirmFoods();
-                } else {
+                if (this.recognizing.state === this.states.ready) {
                     this.recognizeFoods();
+                } else if (this.recognizing.state === this.states.finished) {
+                    this.confirmFoods();
                 }
             },
             recognizeFoods() {
-                this.uploading = true;
+                this.recognizing.state = this.states.uploading;
+
+                const fileReader = new FileReader();
+                fileReader.onload = (e) => this.recognizing.fileSrc = e.target.result;
+                fileReader.readAsDataURL(this.recognizing.file);
 
                 setTimeout(() => {
-                    this.uploading = false;
-                    this.uploaded = true;
+                    this.recognizing.state = this.states.estimating;
 
-                    const fileReader = new FileReader();
-                    fileReader.onload = (e) => this.$refs['preview-image'].src = e.target.result;
-                    fileReader.readAsDataURL(this.selectedFile);
+                    setTimeout(() => {
+                        this.recognizing.state = this.states.finished;
+
+                        this.foods = [{id: 'kimchi-soup', name: '김치찌개', calories: 456}];
+                    }, 500);
                 }, 1000);
             },
             confirmFoods() {
-                this.$emit('confirm', this.dishes);
+                this.$emit('confirm', this.foods);
                 this.hide();
-            },
-            reset() {
-                this.selectedFile = null;
-                this.uploading = false;
-                this.uploaded = false;
             }
         }
     }
