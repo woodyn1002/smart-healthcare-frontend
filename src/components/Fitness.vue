@@ -53,6 +53,9 @@
         <fitness-add-fitness-modal
                 ref="add-fitness-modal"
         ></fitness-add-fitness-modal>
+        <fitness-edit-fitness-modal
+                ref="edit-fitness-modal"
+        ></fitness-edit-fitness-modal>
     </b-container>
 </template>
 
@@ -62,12 +65,13 @@
     import * as timeFormatter from "../utils/time-formatter";
     import FitnessAddFitnessModal from "@/components/FitnessAddFitnessModal";
     import FitnessRecognizeExerciseModal from "@/components/FitnessRecognizeExerciseModal";
+    import FitnessEditFitnessModal from "@/components/FitnessEditFitnessModal";
 
     const dateFormat = 'A h[시] mm[분]';
 
     export default {
         name: "fitness",
-        components: {FitnessRecognizeExerciseModal, FitnessAddFitnessModal},
+        components: {FitnessEditFitnessModal, FitnessRecognizeExerciseModal, FitnessAddFitnessModal},
         data() {
             return {
                 selectedDate: new Date(),
@@ -94,7 +98,7 @@
                 this.$refs['add-fitness-modal'].show(this.selectedDate, fitness);
             },
             editFitness(item) {
-                alert(item.date);
+                this.$refs['edit-fitness-modal'].show(item.date, item);
             },
             deleteFitness(item) {
                 alert(item.date);
