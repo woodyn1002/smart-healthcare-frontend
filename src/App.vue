@@ -2,7 +2,7 @@
     <div id="app">
         <b-navbar class="mb-3" sticky toggleable="lg" type="light" variant="light">
             <b-container>
-                <b-navbar-brand :href="loggedIn ? '/dashboard' : '/'">
+                <b-navbar-brand :to="loggedIn ? '/dashboard' : '/'">
                     Smart Healthcare
                 </b-navbar-brand>
 
