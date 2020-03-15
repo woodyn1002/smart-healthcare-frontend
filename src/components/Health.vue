@@ -8,6 +8,7 @@
                     <b-card class="mb-3" header="기초대사량">
                         <b-card-text class="display-4">1999 kcal</b-card-text>
                     </b-card>
+
                     <b-card class="mb-3" header="비만도">
                         <b-card-text class="display-4">24.69</b-card-text>
                         <h6>현재 체중

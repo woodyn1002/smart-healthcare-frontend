@@ -17,6 +17,7 @@
                             v-model="form.username"
                     ></b-form-input>
                 </b-form-group>
+
                 <b-form-group
                         id="input-group-password"
                         label="비밀번호:"
@@ -32,9 +33,11 @@
                             v-model="form.password"
                     ></b-form-input>
                 </b-form-group>
+
                 <b-alert :show="error.showAlert" @dismissed="error.showAlert=false" dismissible fade variant="danger">
                     {{ error.message }}
                 </b-alert>
+
                 <b-button class="mr-1" type="submit" variant="primary">로그인</b-button>
                 <b-button to="/register" variant="light">회원 가입</b-button>
             </b-form>

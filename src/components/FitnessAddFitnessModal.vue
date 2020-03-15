@@ -29,8 +29,8 @@
                     <b-form-group label="시작 시간" label-for="start-time-input">
                         <b-form-timepicker
                                 hide-header
-                                show-seconds
                                 id="start-time-input"
+                                show-seconds
                                 v-model="form.startTime"
                         ></b-form-timepicker>
                     </b-form-group>
@@ -39,8 +39,8 @@
                     <b-form-group label="종료 시간" label-for="finish-time-input">
                         <b-form-timepicker
                                 hide-header
-                                show-seconds
                                 id="finish-time-input"
+                                show-seconds
                                 v-model="form.finishTime"
                         ></b-form-timepicker>
                     </b-form-group>
