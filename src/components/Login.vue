@@ -2,14 +2,10 @@
     <b-container>
         <b-card class="mx-auto" style="max-width: 30rem;" title="로그인">
             <b-form @submit="handleLogin">
-                <b-form-group
-                        id="input-group-username"
-                        label="사용자 이름:"
-                        label-for="input-1"
-                >
+                <b-form-group label="사용자 이름:" label-for="username-input">
                     <b-form-input
                             :state="null"
-                            id="input-username"
+                            id="username-input"
                             placeholder="Enter username"
                             required
                             trim
@@ -18,14 +14,10 @@
                     ></b-form-input>
                 </b-form-group>
 
-                <b-form-group
-                        id="input-group-password"
-                        label="비밀번호:"
-                        label-for="input-1"
-                >
+                <b-form-group label="비밀번호:" label-for="password-input">
                     <b-form-input
                             :state="null"
-                            id="input-password"
+                            id="password-input"
                             placeholder="Enter password"
                             required
                             trim

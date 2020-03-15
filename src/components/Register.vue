@@ -4,14 +4,13 @@
             <b-form @submit="handleRegister">
                 <b-form-group
                         description="6-16자, 영문과 숫자만으로 구성"
-                        id="input-group-username"
                         label="사용자 이름:"
-                        label-for="input-1"
+                        label-for="username-input"
                 >
                     <b-form-input
                             :state="null"
                             aria-describedby="username-feedback"
-                            id="input-username"
+                            id="username-input"
                             placeholder="Enter username"
                             required
                             trim
@@ -22,16 +21,16 @@
                         사용자 이름은 6자 이상, 20자 이하이어야 합니다
                     </b-form-invalid-feedback>
                 </b-form-group>
+
                 <b-form-group
                         description="6자 이상, 20자 이하"
-                        id="input-group-password"
                         label="비밀번호:"
-                        label-for="input-1"
+                        label-for="password-input"
                 >
                     <b-form-input
                             :state="null"
                             aria-describedby="password-feedback"
-                            id="input-password"
+                            id="password-input"
                             placeholder="Enter password"
                             required
                             trim
@@ -42,16 +41,16 @@
                         비밀번호은 6자 이상, 20자 이하이어야 합니다
                     </b-form-invalid-feedback>
                 </b-form-group>
+
                 <b-form-group
                         description="위와 동일한 비밀번호를 입력"
-                        id="input-group-password-confirm"
                         label="비밀번호 확인:"
-                        label-for="input-1"
+                        label-for="password-input"
                 >
                     <b-form-input
                             :state="null"
                             aria-describedby="password-confirm-feedback"
-                            id="input-password-confirm"
+                            id="password-confirm-input"
                             placeholder="Enter password"
                             required
                             trim
@@ -62,29 +61,29 @@
                         비밀번호은 6자 이상, 20자 이하이어야 합니다
                     </b-form-invalid-feedback>
                 </b-form-group>
+
                 <b-form-group
-                        id="input-group-full-name"
                         label="실명:"
-                        label-for="input-1"
+                        label-for="full-name-input"
                 >
                     <b-form-input
                             :state="null"
-                            id="input-full-name"
+                            id="full-name-input"
                             placeholder="Enter your full name"
                             required
                             type="text"
                             v-model="form.fullName"
                     ></b-form-input>
                 </b-form-group>
+
                 <b-form-group
                         description="email@example.com 형식"
-                        id="input-group-email"
                         label="이메일:"
-                        label-for="input-1"
+                        label-for="email-input"
                 >
                     <b-form-input
                             :state="null"
-                            id="input-email"
+                            id="email-input"
                             placeholder="Enter email"
                             required
                             trim
@@ -92,9 +91,11 @@
                             v-model="form.email"
                     ></b-form-input>
                 </b-form-group>
+
                 <b-alert :show="error.showAlert" @dismissed="error.showAlert=false" dismissible fade variant="danger">
                     {{ error.message }}
                 </b-alert>
+
                 <b-button class="mr-1" type="submit" variant="primary">회원 가입</b-button>
                 <b-button to="/login" variant="light">로그인</b-button>
             </b-form>
