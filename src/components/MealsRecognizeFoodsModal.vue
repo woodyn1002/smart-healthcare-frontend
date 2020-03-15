@@ -115,7 +115,11 @@
                 }, 1000);
             },
             confirmFoods() {
-                this.$emit('confirm', this.foods);
+                let meal = {dishes: []};
+                for (let food of this.foods)
+                    meal.dishes.push({foodId: food.id, amount: 1});
+
+                this.$emit('confirm', meal);
                 this.hide();
             }
         }
