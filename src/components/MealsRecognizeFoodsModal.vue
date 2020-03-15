@@ -59,6 +59,7 @@
             state: 0,
             file: null,
             fileSrc: '',
+            date: null,
             foods: []
         }
     }
@@ -99,6 +100,7 @@
             },
             recognizeFoods() {
                 this.recognizing.state = this.states.uploading;
+                this.recognizing.date = new Date().toISOString();
 
                 const fileReader = new FileReader();
                 fileReader.onload = (e) => this.recognizing.fileSrc = e.target.result;
@@ -115,11 +117,13 @@
                 }, 1000);
             },
             confirmFoods() {
+                let date = this.recognizing.date;
                 let meal = {dishes: []};
-                for (let food of this.foods)
+                for (let food of this.foods) {
                     meal.dishes.push({foodId: food.id, amount: 1});
+                }
 
-                this.$emit('confirm', meal);
+                this.$emit('confirm', date, meal);
                 this.hide();
             }
         }

@@ -58,6 +58,7 @@
 <script>
     import moment from "moment";
     import "moment/locale/ko";
+    import {YYYYMMDD} from "@/utils/time-formatter";
     import MealsAddMealModal from "./MealsAddMealModal";
     import MealsRecognizeFoodsModal from "./MealsRecognizeFoodsModal";
 
@@ -68,7 +69,7 @@
         components: {MealsRecognizeFoodsModal, MealsAddMealModal},
         data() {
             return {
-                selectedDate: new Date(),
+                selectedDate: moment().format(YYYYMMDD),
                 mealsTableFields: [
                     {'key': 'date', 'label': '일시'},
                     {'key': 'dishes', 'label': '음식'},
@@ -85,8 +86,15 @@
             showRecognizeFoodsModal() {
                 this.$refs['recognize-foods-modal'].show();
             },
-            showAddMealModal(foods) {
-                this.$refs['add-meal-modal'].show(this.selectedDate, foods);
+            showAddMealModal(date, meal) {
+                if (!date) {
+                    let selected = moment(this.selectedDate, YYYYMMDD);
+                    date = moment()
+                        .year(selected.year())
+                        .month(selected.month())
+                        .date(selected.date());
+                }
+                this.$refs['add-meal-modal'].show(date, meal);
             },
             editMeal(item) {
                 alert(item.date);

@@ -1,3 +1,4 @@
+export const YYYYMMDD = 'YYYY-MM-DD';
 export const HHmmss = 'HH:mm:ss';
 
 export function simplify(duration) {
