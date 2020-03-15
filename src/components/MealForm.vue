@@ -60,7 +60,8 @@
         </b-card>
 
         <b-form-group label="일시" label-for="date-input">
-            <b-form-datepicker id="date-input" v-model="form.date" value-as-date></b-form-datepicker>
+            <b-form-datepicker class="mb-2" id="date-input" v-model="form.date"></b-form-datepicker>
+            <b-form-timepicker hide-header id="time-input" v-model="form.time"></b-form-timepicker>
         </b-form-group>
 
         <b-form-group label-for="location-input">
@@ -89,9 +90,13 @@
 </template>
 
 <script>
+    import moment from "moment";
+    import {HHmmss, YYYYMMDD} from "@/utils/time-formatter";
+
     function defaultFormData() {
         return {
-            date: null,
+            date: '',
+            time: moment().format(HHmmss),
             location: '',
             satisfactionScore: 2,
             dishes: [],
@@ -122,12 +127,16 @@
                 return this.form.dishes
                     .map(dish => dish.totalCalories)
                     .reduce((acc, cur) => acc + cur, 0);
+            },
+            datetime() {
+                return moment(this.form.date + ' ' + this.form.time, YYYYMMDD + ' ' + HHmmss);
             }
         },
         methods: {
             initializeForm(date, meal) {
                 this.form = defaultFormData();
-                this.form.date = date;
+                this.form.date = moment(date).format(YYYYMMDD);
+                this.form.time = moment(date).format(HHmmss);
 
                 if (meal) {
                     if (meal.location) {
@@ -170,7 +179,7 @@
                 this.form.dishes.splice(this.form.dishes.indexOf(dish), 1);
             },
             ok() {
-                let date = this.form.date;
+                let date = this.datetime;
                 let body = {
                     location: (this.form.location !== '') ? this.form.location : null,
                     satisfactionScore: this.form.satisfactionScore,
