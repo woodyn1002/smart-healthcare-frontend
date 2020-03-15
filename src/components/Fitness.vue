@@ -101,7 +101,21 @@
                 this.$refs['edit-fitness-modal'].show(item.date, item);
             },
             deleteFitness(item) {
-                alert(item.date);
+                this.$bvModal.msgBoxConfirm(item.exercise.name + ' 운동 기록을 제거합니다.', {
+                    title: '운동 기록 제거',
+                    size: 'sm',
+                    okTitle: '제거',
+                    cancelTitle: '취소',
+                    footerClass: 'p-2',
+                    hideHeaderClose: false,
+                    centered: true
+                })
+                    .then(value => {
+                        if (value) {
+                            alert(item);
+                        }
+                    })
+                    .catch(err => console.error(err))
             }
         },
         created() {
