@@ -17,7 +17,8 @@ class AuthService {
         const body = {
             username: user.username,
             password: user.password,
-            email: user.email
+            email: user.email,
+            fullName: user.fullName
         };
         return axios.post(API_URL + '/auth/register', qs.stringify(body))
             .then(response => Promise.resolve(response.data))

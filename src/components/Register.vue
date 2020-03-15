@@ -63,6 +63,20 @@
                     </b-form-invalid-feedback>
                 </b-form-group>
                 <b-form-group
+                        id="input-group-full-name"
+                        label="실명:"
+                        label-for="input-1"
+                >
+                    <b-form-input
+                            :state="null"
+                            id="input-full-name"
+                            placeholder="Enter your full name"
+                            required
+                            type="text"
+                            v-model="form.fullName"
+                    ></b-form-input>
+                </b-form-group>
+                <b-form-group
                         description="email@example.com 형식"
                         id="input-group-email"
                         label="이메일:"
@@ -109,7 +123,8 @@
                 form: {
                     username: '',
                     password: '',
-                    email: ''
+                    email: '',
+                    fullName: ''
                 },
                 error: {
                     showAlert: false,
