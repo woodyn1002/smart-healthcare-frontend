@@ -90,8 +90,8 @@
             showRecognizeExerciseModal() {
                 this.$refs['recognize-exercise-modal'].show();
             },
-            showAddFitnessModal(fitnessData) {
-                this.$refs['add-fitness-modal'].show(this.selectedDate, fitnessData);
+            showAddFitnessModal(fitness) {
+                this.$refs['add-fitness-modal'].show(this.selectedDate, fitness);
             },
             editFitness(item) {
                 alert(item.date);

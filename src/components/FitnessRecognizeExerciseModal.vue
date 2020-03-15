@@ -65,7 +65,6 @@
             selectedExerciseName: '',
             count: 0,
             startMoment: null,
-            finishMoment: null,
             timer: null,
             elapsedTime: 0,
             finishedWithNoCount: false
@@ -141,7 +140,6 @@
                     this.recognizing.state = this.states.ready;
                 } else {
                     this.recognizing.state = this.states.finished;
-                    this.recognizing.finishMoment = moment();
                 }
             },
             handleOk(event) {
@@ -149,13 +147,13 @@
                 this.confirmExercise();
             },
             confirmExercise() {
-                let fitnessData = {
-                    exercise: this.selectedExercise,
+                let fitness = {
+                    date: this.recognizing.startMoment.toISOString(),
+                    exerciseId: this.selectedExercise.id,
                     count: this.recognizing.count,
-                    startMoment: this.recognizing.startMoment,
-                    finishMoment: this.recognizing.finishMoment
+                    elapsedTime: this.recognizing.elapsedTime
                 };
-                this.$emit('confirm', fitnessData);
+                this.$emit('confirm', fitness);
                 this.hide();
             }
         },
