@@ -52,6 +52,9 @@
         <meals-add-meal-modal
                 ref="add-meal-modal"
         ></meals-add-meal-modal>
+        <meals-edit-meal-modal
+                ref="edit-meal-modal"
+        ></meals-edit-meal-modal>
     </b-container>
 </template>
 
@@ -61,12 +64,13 @@
     import {YYYYMMDD} from "@/utils/time-formatter";
     import MealsAddMealModal from "./MealsAddMealModal";
     import MealsRecognizeFoodsModal from "./MealsRecognizeFoodsModal";
+    import MealsEditMealModal from "@/components/MealsEditMealModal";
 
     const dateFormat = 'A h[시] mm[분]';
 
     export default {
         name: "meals",
-        components: {MealsRecognizeFoodsModal, MealsAddMealModal},
+        components: {MealsEditMealModal, MealsRecognizeFoodsModal, MealsAddMealModal},
         data() {
             return {
                 selectedDate: moment().format(YYYYMMDD),
@@ -97,7 +101,7 @@
                 this.$refs['add-meal-modal'].show(date, meal);
             },
             editMeal(item) {
-                alert(item.date);
+                this.$refs['edit-meal-modal'].show(item.date, item);
             },
             deleteMeal(item) {
                 alert(item.date);
