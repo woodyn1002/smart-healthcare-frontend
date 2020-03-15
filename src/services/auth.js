@@ -13,23 +13,13 @@ class AuthService {
         }
     }
 
-    register(user) {
-        const body = {
-            username: user.username,
-            password: user.password,
-            email: user.email,
-            fullName: user.fullName
-        };
+    register(body) {
         return axios.post(API_URL + '/auth/register', qs.stringify(body))
             .then(response => Promise.resolve(response.data))
             .catch(error => Promise.reject(error.response.data));
     }
 
-    login(user) {
-        const body = {
-            username: user.username,
-            password: user.password
-        };
+    login(body) {
         return axios.post(API_URL + '/auth/login', qs.stringify(body))
             .then(response => {
                 localStorage.setItem('user', JSON.stringify(response.data));

@@ -68,7 +68,12 @@
             }),
             handleLogin(event) {
                 event.preventDefault();
-                this.login(this.form).then(
+
+                let body = {
+                    username: this.form.username,
+                    password: this.form.password
+                };
+                this.login(body).then(
                     () => {
                         this.$router.push('/dashboard');
                     },

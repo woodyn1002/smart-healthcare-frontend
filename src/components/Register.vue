@@ -123,6 +123,7 @@
                 form: {
                     username: '',
                     password: '',
+                    passwordConfirm: '',
                     email: '',
                     fullName: ''
                 },
@@ -139,7 +140,13 @@
             handleRegister(event) {
                 event.preventDefault();
 
-                this.register(this.form).then(
+                let body = {
+                    username: this.form.username,
+                    password: this.form.password,
+                    email: this.form.email,
+                    fullName: this.form.fullName
+                };
+                this.register(body).then(
                     () => {
                         this.$router.push('/');
                     },
