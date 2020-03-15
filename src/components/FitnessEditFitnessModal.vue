@@ -1,5 +1,5 @@
 <template>
-    <b-modal ref="modal" title="운동 수정">
+    <b-modal ref="modal" static title="운동 수정">
         <fitness-form @ok="editFitness" ref="fitness-form"></fitness-form>
 
         <template v-slot:modal-footer="{ cancel }">
@@ -22,9 +22,7 @@
         methods: {
             show(date, fitness) {
                 this.$refs['modal'].show();
-                this.$nextTick(() => {
-                    this.$refs['fitness-form'].initializeForm(date, fitness);
-                });
+                this.$refs['fitness-form'].initializeForm(date, fitness);
             },
             hide() {
                 this.$refs['modal'].hide();
