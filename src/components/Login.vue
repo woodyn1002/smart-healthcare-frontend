@@ -1,47 +1,71 @@
 <template>
     <b-container>
         <b-card class="mx-auto" style="max-width: 30rem;" title="로그인">
-            <b-form @submit="handleLogin">
-                <b-form-group label="사용자 이름:" label-for="username-input">
-                    <b-form-input
-                            :state="null"
-                            id="username-input"
-                            placeholder="Enter username"
-                            required
-                            trim
-                            type="text"
-                            v-model="form.username"
-                    ></b-form-input>
-                </b-form-group>
+            <ValidationObserver ref="form-validation">
+                <b-form @submit="handleLogin">
+                    <b-form-group label="사용자 이름:" label-for="username-input">
+                        <ValidationProvider name="사용자 이름" rules="required" v-slot="{valid, errors}">
+                            <b-form-input
+                                    :state="(errors[0]) ? false : ((valid) ? true : null)"
+                                    aria-describedby="username-feedback"
+                                    id="username-input"
+                                    placeholder="Enter username"
+                                    trim
+                                    type="text"
+                                    v-model="form.username"
+                            ></b-form-input>
+                            <b-form-invalid-feedback id="username-feedback">
+                                {{ errors[0] }}
+                            </b-form-invalid-feedback>
+                        </ValidationProvider>
+                    </b-form-group>
 
-                <b-form-group label="비밀번호:" label-for="password-input">
-                    <b-form-input
-                            :state="null"
-                            id="password-input"
-                            placeholder="Enter password"
-                            required
-                            trim
-                            type="password"
-                            v-model="form.password"
-                    ></b-form-input>
-                </b-form-group>
+                    <b-form-group label="비밀번호:" label-for="password-input">
+                        <ValidationProvider name="비밀번호" rules="required" v-slot="{valid, errors}">
+                            <b-form-input
+                                    :state="(errors[0]) ? false : ((valid) ? true : null)"
+                                    aria-describedby="password-feedback"
+                                    id="password-input"
+                                    placeholder="Enter password"
+                                    trim
+                                    type="password"
+                                    v-model="form.password"
+                            ></b-form-input>
+                            <b-form-invalid-feedback id="password-feedback">
+                                {{ errors[0] }}
+                            </b-form-invalid-feedback>
+                        </ValidationProvider>
+                    </b-form-group>
 
-                <b-alert :show="error.showAlert" @dismissed="error.showAlert=false" dismissible fade variant="danger">
-                    {{ error.message }}
-                </b-alert>
+                    <b-alert
+                            :show="error.showAlert"
+                            @dismissed="error.showAlert=false"
+                            dismissible
+                            fade
+                            variant="danger">
+                        {{ error.message }}
+                    </b-alert>
 
-                <b-button class="mr-1" type="submit" variant="primary">로그인</b-button>
-                <b-button to="/register" variant="light">회원 가입</b-button>
-            </b-form>
+                    <b-button class="mr-1" type="submit" variant="primary">로그인</b-button>
+                    <b-button to="/register" variant="light">회원 가입</b-button>
+                </b-form>
+            </ValidationObserver>
         </b-card>
     </b-container>
 </template>
 
 <script>
     import {mapActions} from "vuex";
+    import {extend, localize, ValidationObserver, ValidationProvider} from "vee-validate";
+    import {required} from "vee-validate/dist/rules";
+
+    localize('ko');
+
+    extend('required', required);
 
     export default {
         name: "login",
+        components: {ValidationObserver, ValidationProvider},
         data() {
             return {
                 form: {
@@ -61,19 +85,31 @@
             handleLogin(event) {
                 event.preventDefault();
 
-                let body = {
-                    username: this.form.username,
-                    password: this.form.password
-                };
-                this.login(body).then(
-                    () => {
-                        this.$router.push('/dashboard');
-                    },
-                    error => {
-                        this.error.message = error.message;
-                        this.error.showAlert = true;
-                    }
-                );
+                this.$refs['form-validation'].validate()
+                    .then(passed => {
+                        if (passed) {
+                            let body = {
+                                username: this.form.username,
+                                password: this.form.password
+                            };
+                            this.login(body).then(
+                                () => {
+                                    this.$router.push('/dashboard');
+                                },
+                                error => {
+                                    let message;
+                                    if (error.error === 'UserNotFoundError')
+                                        message = '등록되지 않은 사용자입니다.';
+                                    else if (error.error === 'InvalidPasswordError')
+                                        message = '비밀번호가 일치하지 않습니다.';
+                                    else
+                                        message = error.error + ': ' + error.message;
+                                    this.error.message = message;
+                                    this.error.showAlert = true;
+                                }
+                            );
+                        }
+                    });
             }
         }
     }
