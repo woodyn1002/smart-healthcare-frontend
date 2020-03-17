@@ -56,17 +56,21 @@
             </b-row>
         </b-container>
         <b-container class="text-right">
-            <b-button pill to="health/edit" variant="primary">
+            <b-button @click="showEditModal()" pill variant="primary">
                 <b-icon-pencil></b-icon-pencil>
                 정보 수정
             </b-button>
         </b-container>
+        <health-edit-modal ref="edit-modal"></health-edit-modal>
     </b-container>
 </template>
 
 <script>
+    import HealthEditModal from "@/components/HealthEditModal";
+
     export default {
         name: "health",
+        components: {HealthEditModal},
         data() {
             return {
                 healthData: {
@@ -93,6 +97,11 @@
                         }
                     ]
                 }
+            }
+        },
+        methods: {
+            showEditModal() {
+                this.$refs['edit-modal'].show();
             }
         }
     }
