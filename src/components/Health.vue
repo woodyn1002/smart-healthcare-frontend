@@ -54,11 +54,13 @@
                             </template>
                             <template v-slot:cell(waist)="data">
                                 <span id="waist">
-                                    <template v-if="data.value">{{ data.value }}cm</template>
-                                    <template v-else>-</template>
-                                    <template v-if="abnormalWaist">
-                                        <b-badge class="ml-1" variant="danger">비정상</b-badge>
+                                    <template v-if="data.value">
+                                        {{ data.value }}cm
+                                        <template v-if="abnormalWaist">
+                                            <b-badge class="ml-1" variant="danger">비정상</b-badge>
+                                        </template>
                                     </template>
+                                    <template v-else>-</template>
                                 </span>
                                 <b-tooltip target="waist">
                                     남자 90cm, 여자 85cm 이상 비정상
@@ -68,11 +70,11 @@
                                 <span id="blood-pressure">
                                     <template v-if="data.value && data.value.min && data.value.max">
                                         {{ data.value.min }}~{{ data.value.max }}mmHg
+                                        <template v-if="abnormalBloodPressure">
+                                            <b-badge class="ml-1" variant="danger">비정상</b-badge>
+                                        </template>
                                     </template>
                                     <template v-else>-</template>
-                                    <template v-if="abnormalBloodPressure">
-                                        <b-badge class="ml-1" variant="danger">비정상</b-badge>
-                                    </template>
                                 </span>
                                 <b-tooltip target="blood-pressure">130/85mmHg 이상 비정상</b-tooltip>
                             </template>
@@ -80,21 +82,23 @@
                                 <span id="neutral-fat">
                                     <template v-if="data.value">
                                         {{ data.value }}mg/DI
+                                        <template v-if="abnormalNeutralFat">
+                                            <b-badge class="ml-1" variant="danger">비정상</b-badge>
+                                        </template>
                                     </template>
                                     <template v-else>-</template>
-                                    <template v-if="abnormalNeutralFat">
-                                        <b-badge class="ml-1" variant="danger">비정상</b-badge>
-                                    </template>
                                 </span>
                                 <b-tooltip target="neutral-fat">150mg/DI 이상 비정상</b-tooltip>
                             </template>
                             <template v-slot:cell(hdlCholesterol)="data">
                                 <span id="hdl-cholesterol">
-                                    <template v-if="data.value">{{ data.value }}mg/DI</template>
-                                    <template v-else>-</template>
-                                    <template v-if="abnormalHdlCholesterol">
-                                        <b-badge class="ml-1" variant="danger">비정상</b-badge>
+                                    <template v-if="data.value">
+                                        {{ data.value }}mg/DI
+                                        <template v-if="abnormalHdlCholesterol">
+                                            <b-badge class="ml-1" variant="danger">비정상</b-badge>
+                                        </template>
                                     </template>
+                                    <template v-else>-</template>
                                 </span>
                                 <b-tooltip target="hdl-cholesterol">
                                     남자 40mg/DI, 여자 50mg/DI 미만 비정상
@@ -104,11 +108,11 @@
                                 <span id="fasting-blood-sugar">
                                     <template v-if="data.value">
                                         {{ data.value }}mg/DI
+                                        <template v-if="abnormalFastingBloodSugar">
+                                            <b-badge class="ml-1" variant="danger">비정상</b-badge>
+                                        </template>
                                     </template>
                                     <template v-else>-</template>
-                                    <template v-if="abnormalFastingBloodSugar">
-                                        <b-badge class="ml-1" variant="danger">비정상</b-badge>
-                                    </template>
                                 </span>
                                 <b-tooltip target="fasting-blood-sugar">
                                     100mg/DI 이상 비정상
