@@ -24,7 +24,7 @@
                                 </b-badge>
                             </h6>
                             <b-progress class="mb-2">
-                                <b-progress-bar :label="bmi" :value="bmi - 15" :variant="bmiStateVariant"
+                                <b-progress-bar :label="String(bmi)" :value="bmi - 15" :variant="bmiStateVariant"
                                                 max="20"></b-progress-bar>
                             </b-progress>
                             <h6>정상 체중</h6>
