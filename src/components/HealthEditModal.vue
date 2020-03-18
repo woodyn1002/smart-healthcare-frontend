@@ -146,7 +146,7 @@
                                 ></b-form-input>
                             </ValidationProvider>
                         </b-form>
-                        <b-form-checkbox class="mt-1" v-model="form.bloodPressure.medicine">
+                        <b-form-checkbox class="mt-1" v-model="form.bloodPressureMedicine">
                             고혈압 치료약제 복용
                         </b-form-checkbox>
                     </b-col>
@@ -163,13 +163,13 @@
                                     aria-describedby="neutral-fat-feedback"
                                     id="neutral-fat-input"
                                     type="number"
-                                    v-model="form.neutralFat.fatigue"
+                                    v-model="form.neutralFat"
                             ></b-form-input>
                             <b-form-invalid-feedback id="neutral-fat-feedback">
                                 {{ errors[0] }}
                             </b-form-invalid-feedback>
                         </ValidationProvider>
-                        <b-form-checkbox class="mt-1" v-model="form.neutralFat.medicine">
+                        <b-form-checkbox class="mt-1" v-model="form.neutralFatMedicine">
                             이상지혈증 치료약제 복용
                         </b-form-checkbox>
                     </b-col>
@@ -208,13 +208,13 @@
                                     aria-describedby="fasting-blood-sugar-feedback"
                                     id="fasting-blood-sugar-input"
                                     type="number"
-                                    v-model="form.fastingBloodSugar.fatigue"
+                                    v-model="form.fastingBloodSugar"
                             ></b-form-input>
                             <b-form-invalid-feedback id="fasting-blood-sugar-feedback">
                                 {{ errors[0] }}
                             </b-form-invalid-feedback>
                         </ValidationProvider>
-                        <b-form-checkbox class="mt-1" v-model="form.fastingBloodSugar.medicine">
+                        <b-form-checkbox class="mt-1" v-model="form.fastingBloodSugarMedicine">
                             당뇨병 치료약제 복용
                         </b-form-checkbox>
                     </b-col>
@@ -255,17 +255,13 @@
             bloodPressure: {
                 min: undefined,
                 max: undefined,
-                medicine: undefined
             },
-            neutralFat: {
-                fatigue: undefined,
-                medicine: undefined
-            },
+            bloodPressureMedicine: undefined,
+            neutralFat: undefined,
+            neutralFatMedicine: undefined,
             hdlCholesterol: undefined,
-            fastingBloodSugar: {
-                fatigue: undefined,
-                medicine: undefined
-            }
+            fastingBloodSugar: undefined,
+            fastingBloodSugarMedicine: undefined
         };
     }
 

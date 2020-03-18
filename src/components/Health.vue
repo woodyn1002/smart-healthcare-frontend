@@ -78,8 +78,8 @@
                             </template>
                             <template v-slot:cell(neutralFat)="data">
                                 <span id="neutral-fat">
-                                    <template v-if="data.value && data.value.fatigue">
-                                        {{ data.value.fatigue }}mg/DI
+                                    <template v-if="data.value">
+                                        {{ data.value }}mg/DI
                                     </template>
                                     <template v-else>-</template>
                                     <template v-if="abnormalNeutralFat">
@@ -102,8 +102,8 @@
                             </template>
                             <template v-slot:cell(fastingBloodSugar)="data">
                                 <span id="fasting-blood-sugar">
-                                    <template v-if="data.value && data.value.fatigue">
-                                        {{ data.value.fatigue }}mg/DI
+                                    <template v-if="data.value">
+                                        {{ data.value }}mg/DI
                                     </template>
                                     <template v-else>-</template>
                                     <template v-if="abnormalFastingBloodSugar">
@@ -161,17 +161,13 @@
                     bloodPressure: {
                         min: undefined,
                         max: undefined,
-                        medicine: undefined
                     },
-                    neutralFat: {
-                        fatigue: undefined,
-                        medicine: undefined
-                    },
+                    bloodPressureMedicine: undefined,
+                    neutralFat: undefined,
+                    neutralFatMedicine: undefined,
                     hdlCholesterol: undefined,
-                    fastingBloodSugar: {
-                        fatigue: undefined,
-                        medicine: undefined
-                    }
+                    fastingBloodSugar: undefined,
+                    fastingBloodSugarMedicine: undefined
                 },
                 bmiStates: {
                     underweight: 0,
@@ -247,9 +243,8 @@
             },
             abnormalNeutralFat() {
                 if (!this.healthData.neutralFat) return false;
-                if (!this.healthData.neutralFat.fatigue) return false;
 
-                return this.healthData.neutralFat.fatigue >= 150;
+                return this.healthData.neutralFat >= 150;
             },
             abnormalHdlCholesterol() {
                 if (!this.healthData.hdlCholesterol) return false;
@@ -265,7 +260,7 @@
             abnormalFastingBloodSugar() {
                 if (!this.healthData.fastingBloodSugar) return false;
 
-                return this.healthData.fastingBloodSugar.fatigue >= 100;
+                return this.healthData.fastingBloodSugar >= 100;
             }
         },
         methods: {
@@ -281,9 +276,9 @@
                 ldlCholesterol: 100,
                 waist: 70,
                 bloodPressure: {min: 75, max: 120},
-                neutralFat: {fatigue: 160},
+                neutralFat: 160,
                 hdlCholesterol: 30,
-                fastingBloodSugar: {fatigue: 110},
+                fastingBloodSugar: 110,
             };
         }
     }
