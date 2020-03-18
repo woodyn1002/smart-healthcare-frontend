@@ -1,5 +1,6 @@
 <template>
     <b-container>
+        <vue-headful title="로그인 - 스마트 헬스케어"/>
         <b-card class="mx-auto" style="max-width: 30rem;" title="로그인">
             <ValidationObserver ref="form-validation">
                 <b-form @submit="handleLogin">

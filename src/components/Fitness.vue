@@ -1,5 +1,6 @@
 <template>
     <b-container>
+        <vue-headful title="운동 관리 - 스마트 헬스케어"/>
         <h2>운동 관리</h2>
         <hr/>
         <b-container>

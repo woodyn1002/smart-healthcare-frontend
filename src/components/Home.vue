@@ -1,5 +1,6 @@
 <template>
     <div>
+        <vue-headful title="스마트 헬스케어"/>
         <b-container>
             <b-jumbotron header="Smart Healthcare">
                 <template v-slot:lead>
