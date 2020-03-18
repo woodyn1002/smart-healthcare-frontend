@@ -37,7 +37,7 @@
                             <b-icon-calendar></b-icon-calendar>
                             식사 관리
                         </b-button>
-                        <b-button pill size="sm" to="meals/add" variant="outline-secondary">
+                        <b-button pill size="sm" to="/meals?add=true" variant="outline-secondary">
                             <b-icon-plus></b-icon-plus>
                             추가
                         </b-button>
@@ -56,7 +56,7 @@
                             <b-icon-calendar></b-icon-calendar>
                             운동 관리
                         </b-button>
-                        <b-button pill size="sm" to="fitness/add" variant="outline-secondary">
+                        <b-button pill size="sm" to="/fitness?add=true" variant="outline-secondary">
                             <b-icon-plus></b-icon-plus>
                             추가
                         </b-button>

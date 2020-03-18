@@ -7,7 +7,7 @@
                 <b-col class="mb-3" lg="4">
                     <b-calendar block v-model="selectedDate">
                         <div class="d-flex" dir="ltr">
-                            <b-dropdown class="ml-auto" variant="outline-primary">
+                            <b-dropdown class="ml-auto" ref="add-dropdown" variant="outline-primary">
                                 <template v-slot:button-content>
                                     <b-icon-plus></b-icon-plus>
                                     운동 등록
@@ -134,6 +134,10 @@
                 if (!exercise) exercise = {name: '존재하지 않는 운동'};
 
                 fitness.exercise = exercise;
+            }
+
+            if (this.$route.query.add) {
+                this.$nextTick(() => this.$refs['add-dropdown'].show());
             }
         }
     }
