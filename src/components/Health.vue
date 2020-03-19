@@ -220,6 +220,10 @@
                 bmiState: 'overweight',
                 abnormalFields: ['neutralFat', 'hdlCholesterol', 'fastingBloodSugar']
             };
+
+            if (this.$route.query.edit) {
+                this.$nextTick(() => this.showEditModal());
+            }
         }
     }
 </script>

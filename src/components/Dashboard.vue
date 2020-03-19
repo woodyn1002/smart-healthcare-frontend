@@ -6,16 +6,28 @@
             {{ currentUser.username }}님
         </h2>
         <hr/>
-        <b-card class="mb-3" header="대사 정보">
+        <b-alert class="py-3" show v-if="!healthData.bmr && !healthData.bmi" variant="success">
+            <h4 class="alert-heading">Welcome, {{ currentUser.username }}!</h4>
+            <p>
+                사용에 앞서 건강 정보를 입력해주세요.<br/>
+                대사 관리 페이지에서 건강 정보를 입력하면 기초대사량과 비만도가 계산됩니다.
+            </p>
+            <hr/>
+            <b-button to="/health?edit=true" variant="success">
+                <b-icon-pencil></b-icon-pencil>
+                정보 입력
+            </b-button>
+        </b-alert>
+        <b-card class="mb-3" header="대사 정보" v-else>
             <b-row>
-                <b-col class="text-center my-auto">
+                <b-col class="text-center my-auto" v-if="healthData.bmr">
                     <small class="text-muted">기초대사량</small>
-                    <h4>100kcal</h4>
+                    <h4>{{ healthData.bmr }}kcal</h4>
                 </b-col>
-                <b-col class="text-center my-auto">
+                <b-col class="text-center my-auto" v-if="healthData.bmi">
                     <small class="text-muted">비만도</small>
-                    <h4>24.69</h4>
-                    <b-badge variant="warning">과체중</b-badge>
+                    <h4>{{ healthData.bmi }}</h4>
+                    <b-badge :variant="bmiStateVariant">{{ bmiStateText }}</b-badge>
                 </b-col>
             </b-row>
             <template v-slot:footer>
@@ -27,8 +39,14 @@
         </b-card>
         <b-card-group class="mb-3" deck>
             <b-card header="최근 식사">
-                <b-table :fields="meals.fields" :items="meals.items">
-                    <template v-slot:cell(calories)="data">
+                <b-table :fields="mealsTableFields" :items="meals">
+                    <template v-slot:cell(date)="data">
+                        {{ toSimpleDateText(data.value) }}
+                    </template>
+                    <template v-slot:cell(dishes)="data">
+                        {{ data.value.map(dish => dish.food.name).join(', ') }}
+                    </template>
+                    <template v-slot:cell(totalCalories)="data">
                         {{ data.value }}kcal
                     </template>
                 </b-table>
@@ -46,8 +64,14 @@
                 </template>
             </b-card>
             <b-card header="최근 운동">
-                <b-table :fields="fitness.fields" :items="fitness.items">
-                    <template v-slot:cell(calories)="data">
+                <b-table :fields="fitnessTableFields" :items="fitnessList">
+                    <template v-slot:cell(date)="data">
+                        {{ toSimpleDateText(data.value) }}
+                    </template>
+                    <template v-slot:cell(exercise)="data">
+                        {{ data.value.name }} {{ data.item.count }}회
+                    </template>
+                    <template v-slot:cell(burntCalories)="data">
                         {{ data.value }}kcal
                     </template>
                 </b-table>
@@ -78,38 +102,126 @@
 
 <script>
     import {mapGetters} from "vuex";
+    import moment from "moment";
 
     export default {
         name: "dashboard",
         computed: {
             ...mapGetters({
                 currentUser: 'auth/currentUser'
-            })
+            }),
+            bmiStateText() {
+                let bmiState = this.healthData.bmiState;
+                if (bmiState === this.bmiStates.underweight) return '저체중';
+                else if (bmiState === this.bmiStates.normal) return '정상 체중';
+                else if (bmiState === this.bmiStates.overweight) return '과체중';
+                else if (bmiState === this.bmiStates.obese) return '비만';
+                else return '고도비만';
+            },
+            bmiStateVariant() {
+                let bmiState = this.healthData.bmiState;
+                if (bmiState === this.bmiStates.underweight) return 'warning';
+                else if (bmiState === this.bmiStates.normal) return 'success';
+                else if (bmiState === this.bmiStates.overweight) return 'warning';
+                else return 'danger';
+            }
         },
         data() {
             return {
-                meals: {
-                    fields: [
-                        {'key': 'date', 'label': '일시'},
-                        {'key': 'foods', 'label': '음식'},
-                        {'key': 'calories', 'label': '열량'}
-                    ],
-                    items: [
-                        {date: '오늘, 오후 4시 경', foods: '김치찌개, 밥', calories: 600},
-                        {date: '어제, 오후 1시 경', foods: '김치찌개, 밥', calories: 600},
-                        {date: '5일 전, 오전 11시 경', foods: '김치찌개, 밥', calories: 600}
-                    ]
+                healthData: {
+                    bmr: undefined,
+                    bmi: undefined,
+                    bmiState: undefined
                 },
-                fitness: {
-                    fields: [
-                        {'key': 'date', 'label': '일시'},
-                        {'key': 'exercises', 'label': '운동'},
-                        {'key': 'calories', 'label': '열량'}
-                    ],
-                    items: [
-                        {date: '오늘, 오후 4시 경', exercises: '팔굽혀펴기', calories: 300}
-                    ]
+                mealsTableFields: [
+                    {'key': 'date', 'label': '일시'},
+                    {'key': 'dishes', 'label': '음식'},
+                    {'key': 'totalCalories', 'label': '열량'}
+                ],
+                foods: [],
+                meals: [],
+                fitnessTableFields: [
+                    {'key': 'date', 'label': '일시'},
+                    {'key': 'exercise', 'label': '운동'},
+                    {'key': 'burntCalories', 'label': '열량'}
+                ],
+                exercises: [],
+                fitnessList: [],
+                bmiStates: {
+                    underweight: 'underweight',
+                    normal: 'normal',
+                    overweight: 'overweight',
+                    obese: 'obese',
+                    extremelyObese: 'extremelyObese'
                 }
+            }
+        },
+        methods: {
+            toSimpleDateText(date) {
+                let datePrefix;
+                let days = moment().diff(moment(date), 'days');
+                if (days === 0)
+                    datePrefix = '오늘';
+                else if (days === 1)
+                    datePrefix = '어제';
+                else
+                    datePrefix = days + '일 전';
+
+                return datePrefix + ', ' + moment(date).format('A h[시 경]');
+            }
+        },
+        created() {
+            this.healthData = {
+                bmr: 1999,
+                bmi: 24.69,
+                bmiState: 'overweight'
+            };
+
+            let foods = [
+                {id: 'kimchi-soup', name: '김치찌개', calories: 456},
+                {id: 'rice', name: '쌀밥', calories: 313}
+            ];
+            this.meals = [
+                {
+                    date: moment().hours(16).toISOString(),
+                    dishes: [{foodId: 'kimchi-soup', amount: 1}, {foodId: 'rice', amount: 1}]
+                },
+                {
+                    date: moment().subtract(1, 'days').hours(13).toISOString(),
+                    dishes: [{foodId: 'kimchi-soup', amount: 1}, {foodId: 'rice', amount: 1}]
+                },
+                {
+                    date: moment().subtract(5, 'days').hours(11).toISOString(),
+                    dishes: [{foodId: 'kimchi-soup', amount: 1}, {foodId: 'rice', amount: 1}]
+                },
+            ];
+
+            for (let meal of this.meals) {
+                let totalCalories = 0;
+                for (let dish of meal.dishes) {
+                    let food = foods.find(food => food.id === dish.foodId);
+                    if (!food) food = {name: '존재하지 않는 음식'};
+
+                    dish.food = food;
+                    totalCalories += food.calories * dish.amount;
+                }
+                meal.totalCalories = totalCalories;
+            }
+
+            this.fitnessList = [
+                {date: moment().hours(16).toISOString(), exerciseId: 'push-up', count: 10, burntCalories: 300}
+            ];
+
+            let exercises = [
+                {id: 'push-up', name: '팔굽혀펴기', met: 3.8},
+                {id: 'squat', name: '스쿼트', met: 3.5}
+            ];
+
+            for (let fitness of this.fitnessList) {
+                let exercise = exercises.find(exercise => exercise.id === fitness.exerciseId);
+                if (!exercise) exercise = {name: '존재하지 않는 운동'};
+
+                fitness.exercise = exercise;
             }
         }
     }
