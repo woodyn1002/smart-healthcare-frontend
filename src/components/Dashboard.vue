@@ -10,7 +10,7 @@
             <b-row>
                 <b-col class="text-center my-auto">
                     <small class="text-muted">기초대사량</small>
-                    <h4>100 kcal</h4>
+                    <h4>100kcal</h4>
                 </b-col>
                 <b-col class="text-center my-auto">
                     <small class="text-muted">비만도</small>
@@ -29,7 +29,7 @@
             <b-card header="최근 식사">
                 <b-table :fields="meals.fields" :items="meals.items">
                     <template v-slot:cell(calories)="data">
-                        {{ data.value }} kcal
+                        {{ data.value }}kcal
                     </template>
                 </b-table>
                 <template v-slot:footer>
@@ -48,7 +48,7 @@
             <b-card header="최근 운동">
                 <b-table :fields="fitness.fields" :items="fitness.items">
                     <template v-slot:cell(calories)="data">
-                        {{ data.value }} kcal
+                        {{ data.value }}kcal
                     </template>
                 </b-table>
                 <template v-slot:footer>

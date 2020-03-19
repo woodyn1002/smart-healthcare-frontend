@@ -7,7 +7,7 @@
             <b-row>
                 <b-col sm="5">
                     <b-card class="mb-3" header="기초대사량">
-                        <b-card-text class="display-4" v-if="healthData.bmr">{{ healthData.bmr }} kcal</b-card-text>
+                        <b-card-text class="display-4" v-if="healthData.bmr">{{ healthData.bmr }}kcal</b-card-text>
                         <b-card-text v-else>성별과 생일, 신장, 체중 정보가 필요합니다.</b-card-text>
                     </b-card>
 
