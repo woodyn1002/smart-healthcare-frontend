@@ -6,7 +6,7 @@ const API_URL = 'http://localhost:3000/v1';
 export function authHeader() {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user && user.token) {
-        return {Authorization: 'Bearer ' + user.token};
+        return {'x-access-token': user.token};
     } else {
         return {};
     }
