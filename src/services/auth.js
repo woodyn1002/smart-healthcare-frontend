@@ -1,7 +1,4 @@
-import axios from "axios";
-import qs from "qs";
-
-const API_URL = 'http://localhost:3000/v1';
+import * as apiClient from "../api-client";
 
 export function authHeader() {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -13,18 +10,15 @@ export function authHeader() {
 }
 
 export function register(body) {
-    return axios.post(API_URL + '/auth/register', qs.stringify(body))
-        .then(response => Promise.resolve(response.data))
-        .catch(error => Promise.reject(error.response.data));
+    return apiClient.request('post', '/auth/register', body);
 }
 
 export function login(body) {
-    return axios.post(API_URL + '/auth/login', qs.stringify(body))
-        .then(response => {
-            localStorage.setItem('user', JSON.stringify(response.data));
-            return Promise.resolve(response.data);
-        })
-        .catch(err => Promise.reject(err.response.data));
+    return apiClient.request('post', '/auth/login', body)
+        .then(user => {
+            localStorage.setItem('user', JSON.stringify(user));
+            return user;
+        });
 }
 
 export function logout() {
