@@ -99,12 +99,12 @@
                                 },
                                 error => {
                                     let message;
-                                    if (error.error === 'UserNotFoundError')
+                                    if (error.name === 'UserNotFoundError')
                                         message = '등록되지 않은 사용자입니다.';
-                                    else if (error.error === 'InvalidPasswordError')
+                                    else if (error.name === 'InvalidPasswordError')
                                         message = '비밀번호가 일치하지 않습니다.';
                                     else
-                                        message = error.error + ': ' + error.message;
+                                        message = error.name + ': ' + error.message;
                                     this.error.message = message;
                                     this.error.showAlert = true;
                                 }

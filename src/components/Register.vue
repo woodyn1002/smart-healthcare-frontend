@@ -175,10 +175,10 @@
                                 },
                                 error => {
                                     let message;
-                                    if (error.error === 'UsernameExistError')
+                                    if (error.name === 'UsernameExistError')
                                         message = '이미 사용중인 사용자 이름입니다.';
                                     else
-                                        message = error.error + ': ' + error.message;
+                                        message = error.name + ': ' + error.message;
                                     this.error.message = message;
                                     this.error.showAlert = true;
                                 }

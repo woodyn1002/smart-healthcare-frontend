@@ -18,7 +18,7 @@ export function request(method, path, body) {
         .then(response => Promise.resolve(response.data))
         .catch(err => {
             if (err.response) {
-                return Promise.reject(err.response.data);
+                return Promise.reject(err.response.data.error);
             } else {
                 console.error(err);
                 return Promise.reject(err);
