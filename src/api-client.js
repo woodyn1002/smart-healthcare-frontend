@@ -16,5 +16,12 @@ export function request(method, path, body) {
 
     return axios(config)
         .then(response => Promise.resolve(response.data))
-        .catch(err => Promise.reject(err.response.data));
+        .catch(err => {
+            if (err.response) {
+                return Promise.reject(err.response.data);
+            } else {
+                console.error(err);
+                return Promise.reject(err);
+            }
+        });
 }
