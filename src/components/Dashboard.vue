@@ -177,51 +177,66 @@
                 bmiState: 'overweight'
             };
 
-            let foods = [
-                {id: 'kimchi-soup', name: '김치찌개', calories: 456},
-                {id: 'rice', name: '쌀밥', calories: 313}
-            ];
             this.meals = [
                 {
                     date: moment().hours(16).toISOString(),
-                    dishes: [{foodId: 'kimchi-soup', amount: 1}, {foodId: 'rice', amount: 1}]
+                    dishes: [{
+                        foodId: 'kimchi-soup',
+                        amount: 1,
+                        food: {id: 'kimchi-soup', name: '김치찌개', calories: 456}
+                    }, {
+                        foodId: 'rice',
+                        amount: 1,
+                        food: {id: 'rice', name: '쌀밥', calories: 313}
+                    }],
+                    totalCalories: 769
                 },
                 {
                     date: moment().subtract(1, 'days').hours(13).toISOString(),
-                    dishes: [{foodId: 'kimchi-soup', amount: 1}, {foodId: 'rice', amount: 1}]
+                    dishes: [{
+                        foodId: 'kimchi-soup',
+                        amount: 1,
+                        food: {id: 'kimchi-soup', name: '김치찌개', calories: 456}
+                    }, {
+                        foodId: 'rice',
+                        amount: 1,
+                        food: {id: 'rice', name: '쌀밥', calories: 313}
+                    }],
+                    totalCalories: 769
                 },
                 {
                     date: moment().subtract(5, 'days').hours(11).toISOString(),
-                    dishes: [{foodId: 'kimchi-soup', amount: 1}, {foodId: 'rice', amount: 1}]
+                    dishes: [{
+                        foodId: 'kimchi-soup',
+                        amount: 1,
+                        food: {id: 'kimchi-soup', name: '김치찌개', calories: 456}
+                    }, {
+                        foodId: 'rice',
+                        amount: 1,
+                        food: {id: 'rice', name: '쌀밥', calories: 313}
+                    }],
+                    totalCalories: 769
                 },
             ];
-
             for (let meal of this.meals) {
-                let totalCalories = 0;
                 for (let dish of meal.dishes) {
-                    let food = foods.find(food => food.id === dish.foodId);
-                    if (!food) food = {name: '존재하지 않는 음식'};
-
-                    dish.food = food;
-                    totalCalories += food.calories * dish.amount;
+                    if (!dish.food) {
+                        dish.food = {id: 'unknown', name: '존재하지 않는 음식', calories: 0};
+                    }
                 }
-                meal.totalCalories = totalCalories;
             }
 
-            this.fitnessList = [
-                {date: moment().hours(16).toISOString(), exerciseId: 'push-up', count: 10, burntCalories: 300}
-            ];
-
-            let exercises = [
-                {id: 'push-up', name: '팔굽혀펴기', met: 3.8},
-                {id: 'squat', name: '스쿼트', met: 3.5}
-            ];
-
+            this.fitnessList = [{
+                date: moment().hours(16).toISOString(),
+                exerciseId: 'push-up',
+                count: 10,
+                burntCalories: 300,
+                exercise: {id: 'push-up', name: '팔굽혀펴기', met: 3.8}
+            }];
             for (let fitness of this.fitnessList) {
-                let exercise = exercises.find(exercise => exercise.id === fitness.exerciseId);
-                if (!exercise) exercise = {name: '존재하지 않는 운동'};
-
-                fitness.exercise = exercise;
+                if (!fitness.exercise) {
+                    fitness.exercise = {id: fitness.exerciseId, name: '존재하지 않는 운동', met: 0};
+                }
             }
         }
     }

@@ -128,26 +128,33 @@
                     date: new Date().toISOString(),
                     location: '집',
                     satisfactionScore: 2,
-                    dishes: [{foodId: 'kimchi-soup', amount: 1}, {foodId: 'rice', amount: 1}]
+                    dishes: [{
+                        foodId: 'kimchi-soup',
+                        amount: 1,
+                        food: {id: 'kimchi-soup', name: '김치찌개', calories: 456}
+                    }, {
+                        foodId: 'rice',
+                        amount: 1,
+                        food: {id: 'rice', name: '쌀밥', calories: 313}
+                    }],
+                    totalCalories: 769
                 },
-                {date: new Date().toISOString(), dishes: [{foodId: 'kimchi-soup', amount: 1}]}
-            ];
-
-            let foods = [
-                {id: 'kimchi-soup', name: '김치찌개', calories: 456},
-                {id: 'rice', name: '쌀밥', calories: 313}
-            ];
-
-            for (let meal of this.meals) {
-                let totalCalories = 0;
-                for (let dish of meal.dishes) {
-                    let food = foods.find(food => food.id === dish.foodId);
-                    if (!food) food = {name: '존재하지 않는 음식'};
-
-                    dish.food = food;
-                    totalCalories += food.calories * dish.amount;
+                {
+                    date: new Date().toISOString(),
+                    dishes: [{
+                        foodId: 'kimchi-soup',
+                        amount: 1,
+                        food: {id: 'kimchi-soup', name: '김치찌개', calories: 456}
+                    }],
+                    totalCalories: 456
                 }
-                meal.totalCalories = totalCalories;
+            ];
+            for (let meal of this.meals) {
+                for (let dish of meal.dishes) {
+                    if (!dish.food) {
+                        dish.food = {id: dish.foodId, name: '존재하지 않는 음식', calories: 0};
+                    }
+                }
             }
 
             if (this.$route.query.add) {

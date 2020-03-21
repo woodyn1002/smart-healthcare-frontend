@@ -121,20 +121,27 @@
         },
         created() {
             this.fitnessList = [
-                {date: new Date().toISOString(), exerciseId: 'push-up', count: 10, elapsedTime: 20, burntCalories: 10},
-                {date: new Date().toISOString(), exerciseId: 'squat', count: 10, elapsedTime: 20, burntCalories: 10}
+                {
+                    date: new Date().toISOString(),
+                    exerciseId: 'push-up',
+                    count: 10,
+                    elapsedTime: 20,
+                    burntCalories: 10,
+                    exercise: {id: 'push-up', name: '팔굽혀펴기', met: 3.8}
+                },
+                {
+                    date: new Date().toISOString(),
+                    exerciseId: 'squat',
+                    count: 10,
+                    elapsedTime: 20,
+                    burntCalories: 10,
+                    exercise: {id: 'squat', name: '스쿼트', met: 3.5}
+                }
             ];
-
-            let exercises = [
-                {id: 'push-up', name: '팔굽혀펴기', met: 3.8},
-                {id: 'squat', name: '스쿼트', met: 3.5}
-            ];
-
             for (let fitness of this.fitnessList) {
-                let exercise = exercises.find(exercise => exercise.id === fitness.exerciseId);
-                if (!exercise) exercise = {name: '존재하지 않는 운동'};
-
-                fitness.exercise = exercise;
+                if (!fitness.exercise) {
+                    fitness.exercise = {id: fitness.exerciseId, name: '존재하지 않는 운동', met: 0};
+                }
             }
 
             if (this.$route.query.add) {
