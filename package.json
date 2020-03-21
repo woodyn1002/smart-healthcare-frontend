@@ -13,7 +13,6 @@
     "bootstrap-vue": "^2.7.0",
     "core-js": "^3.6.4",
     "moment": "^2.24.0",
-    "qs": "^6.9.1",
     "vee-validate": "^3.2.5",
     "vue": "^2.6.11",
     "vue-headful": "^2.1.0",

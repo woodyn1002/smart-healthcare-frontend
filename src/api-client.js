@@ -1,5 +1,4 @@
 import axios from "axios";
-import qs from "qs";
 import {authHeader} from "@/services/auth";
 
 const API_URL = 'http://localhost:3000/v1';
@@ -11,7 +10,7 @@ export function request(method, path, body) {
         headers: authHeader()
     };
     if (body) {
-        config.data = qs.stringify(body);
+        config.data = body;
     }
 
     return axios(config)
