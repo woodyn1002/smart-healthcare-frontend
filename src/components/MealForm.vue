@@ -229,12 +229,13 @@
                     return;
                 }
 
-                let date = this.datetime;
+                let date = this.datetime.toISOString();
                 let body = {
-                    location: (this.form.location !== '') ? this.form.location : null,
                     satisfactionScore: this.form.satisfactionScore,
-                    dishes: [],
+                    dishes: []
                 };
+                if (this.form.location)
+                    body.location = this.form.location;
                 for (let dish of this.form.dishes)
                     body.dishes.push({foodId: dish.foodId, amount: dish.amount});
 
