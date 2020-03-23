@@ -96,6 +96,7 @@
     import {extend, localize, ValidationObserver, ValidationProvider} from "vee-validate";
     import {HHmmss} from "../utils/time-formatter";
     import {min_value, oneOf} from "vee-validate/dist/rules";
+    import * as ExerciseService from "@/services/exercise";
 
     localize('ko');
 
@@ -194,11 +195,12 @@
             }
         },
         created() {
-            this.exercises = [
-                {id: 'push-up', name: '팔굽혀펴기', met: 3.8},
-                {id: 'squat', name: '스쿼트', met: 3.5}
-            ];
-            this.exerciseOptions = this.exercises.map(exercise => exercise.name);
+            ExerciseService.getExercises()
+                .then(exercises => {
+                    this.exercises = exercises;
+                    this.exerciseOptions = this.exercises.map(exercise => exercise.name);
+                })
+                .catch(err => alert(err.name + ': ' + err.message));
         }
     }
 </script>

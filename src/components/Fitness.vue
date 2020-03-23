@@ -52,9 +52,11 @@
                 ref="recognize-exercise-modal"
         ></fitness-recognize-exercise-modal>
         <fitness-add-fitness-modal
+                @created="updateFitnessList()"
                 ref="add-fitness-modal"
         ></fitness-add-fitness-modal>
         <fitness-edit-fitness-modal
+                @updated="updateFitnessList()"
                 ref="edit-fitness-modal"
         ></fitness-edit-fitness-modal>
     </b-container>
@@ -67,6 +69,8 @@
     import FitnessAddFitnessModal from "@/components/FitnessAddFitnessModal";
     import FitnessRecognizeExerciseModal from "@/components/FitnessRecognizeExerciseModal";
     import FitnessEditFitnessModal from "@/components/FitnessEditFitnessModal";
+    import * as FitnessService from "@/services/fitness";
+    import {mapGetters} from "vuex";
 
     const dateFormat = 'A h[시] mm[분]';
 
@@ -84,6 +88,11 @@
                 ],
                 fitnessList: []
             }
+        },
+        computed: {
+            ...mapGetters({
+                currentUser: 'auth/currentUser'
+            })
         },
         methods: {
             formatSeconds(time) {
@@ -113,36 +122,23 @@
                 })
                     .then(value => {
                         if (value) {
-                            alert(item);
+                            FitnessService.deleteFitness(this.currentUser.username, item.date)
+                                .then(() => this.updateFitnessList())
+                                .catch(err => alert(err.name + ': ' + err.message));
                         }
                     })
-                    .catch(err => console.error(err))
+                    .catch(err => alert(err.name + ': ' + err.message));
+            },
+            updateFitnessList() {
+                FitnessService.getFitnessList(this.currentUser.username)
+                    .then(fitnessList => this.fitnessList = fitnessList)
+                    .catch(err => alert(err.name + ': ' + err.message));
             }
         },
         created() {
-            this.fitnessList = [
-                {
-                    date: new Date().toISOString(),
-                    exerciseId: 'push-up',
-                    count: 10,
-                    elapsedTime: 20,
-                    burntCalories: 10,
-                    exercise: {id: 'push-up', name: '팔굽혀펴기', met: 3.8}
-                },
-                {
-                    date: new Date().toISOString(),
-                    exerciseId: 'squat',
-                    count: 10,
-                    elapsedTime: 20,
-                    burntCalories: 10,
-                    exercise: {id: 'squat', name: '스쿼트', met: 3.5}
-                }
-            ];
-            for (let fitness of this.fitnessList) {
-                if (!fitness.exercise) {
-                    fitness.exercise = {id: fitness.exerciseId, name: '존재하지 않는 운동', met: 0};
-                }
-            }
+            FitnessService.getFitnessList(this.currentUser.username)
+                .then(fitnessList => this.fitnessList = fitnessList)
+                .catch(err => alert(err.name + ': ' + err.message));
 
             if (this.$route.query.add) {
                 this.$nextTick(() => this.$refs['add-dropdown'].show());

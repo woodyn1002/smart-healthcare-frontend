@@ -1,5 +1,5 @@
 <template>
-    <b-modal ref="modal" static title="건강 정보 입력">
+    <b-modal @hidden="initializeForm()" ref="modal" static title="건강 정보 입력">
         <ValidationObserver ref="form-validation">
             <b-form @submit.stop.prevent="editHealthData()">
                 <b-row class="mb-3">
@@ -236,6 +236,8 @@
 <script>
     import {extend, ValidationObserver, ValidationProvider} from "vee-validate";
     import {max_value, min_value, regex} from "vee-validate/dist/rules";
+    import * as HealthDataService from "@/services/health-data";
+    import {mapGetters} from "vuex";
 
     extend('regex', regex);
     extend('max_value', max_value);
@@ -265,24 +267,33 @@
         };
     }
 
+    function clone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+    }
+
     export default {
         name: "health-edit-modal",
         components: {ValidationObserver, ValidationProvider},
         data() {
             return {
+                healthData: undefined,
                 form: defaultFormData()
             }
+        },
+        computed: {
+            ...mapGetters({
+                currentUser: 'auth/currentUser'
+            })
         },
         methods: {
             show() {
                 this.$refs['modal'].show();
-                this.initializeForm();
             },
             hide() {
                 this.$refs['modal'].hide();
             },
             initializeForm() {
-                this.form = defaultFormData();
+                this.form = (this.healthData) ? clone(this.healthData) : defaultFormData();
                 this.$refs['form-validation'].reset();
             },
             handleOk(event) {
@@ -294,10 +305,29 @@
                     .then(passed => {
                         if (passed) {
                             let body = this.form;
-                            alert(JSON.stringify(body));
+
+                            HealthDataService.createOrUpdateHealthData(this.currentUser.username, body)
+                                .then(healthData => {
+                                    this.healthData = healthData;
+                                    this.$emit('updated', healthData);
+                                    this.hide();
+                                })
+                                .catch(err => alert(err.name + ': ' + err.message));
                         }
                     });
             }
+        },
+        created() {
+            HealthDataService.getHealthData(this.currentUser.username)
+                .then(healthData => {
+                    this.healthData = healthData;
+                    this.initializeForm();
+                })
+                .catch(err => {
+                    if (err.name !== 'HealthDataNotFoundError') {
+                        alert(err);
+                    }
+                });
         }
     }
 </script>

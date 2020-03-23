@@ -51,9 +51,11 @@
                 ref="recognize-foods-modal"
         ></meals-recognize-foods-modal>
         <meals-add-meal-modal
+                @created="updateMeals()"
                 ref="add-meal-modal"
         ></meals-add-meal-modal>
         <meals-edit-meal-modal
+                @updated="updateMeals()"
                 ref="edit-meal-modal"
         ></meals-edit-meal-modal>
     </b-container>
@@ -66,6 +68,8 @@
     import MealsAddMealModal from "./MealsAddMealModal";
     import MealsRecognizeFoodsModal from "./MealsRecognizeFoodsModal";
     import MealsEditMealModal from "@/components/MealsEditMealModal";
+    import * as MealService from "@/services/meal";
+    import {mapGetters} from "vuex";
 
     const dateFormat = 'A h[시] mm[분]';
 
@@ -83,6 +87,11 @@
                 ],
                 meals: []
             }
+        },
+        computed: {
+            ...mapGetters({
+                currentUser: 'auth/currentUser'
+            })
         },
         methods: {
             formatDate(date) {
@@ -116,46 +125,23 @@
                 })
                     .then(value => {
                         if (value) {
-                            alert(item);
+                            MealService.deleteMeal(this.currentUser.username, item.date)
+                                .then(() => this.updateMeals())
+                                .catch(err => alert(err.name + ': ' + err.message));
                         }
                     })
-                    .catch(err => console.error(err))
+                    .catch(err => alert(err.name + ': ' + err.message));
+            },
+            updateMeals() {
+                MealService.getMeals(this.currentUser.username)
+                    .then(meals => this.meals = meals)
+                    .catch(err => alert(err.name + ': ' + err.message));
             }
         },
         created() {
-            this.meals = [
-                {
-                    date: new Date().toISOString(),
-                    location: '집',
-                    satisfactionScore: 2,
-                    dishes: [{
-                        foodId: 'kimchi-soup',
-                        amount: 1,
-                        food: {id: 'kimchi-soup', name: '김치찌개', calories: 456}
-                    }, {
-                        foodId: 'rice',
-                        amount: 1,
-                        food: {id: 'rice', name: '쌀밥', calories: 313}
-                    }],
-                    totalCalories: 769
-                },
-                {
-                    date: new Date().toISOString(),
-                    dishes: [{
-                        foodId: 'kimchi-soup',
-                        amount: 1,
-                        food: {id: 'kimchi-soup', name: '김치찌개', calories: 456}
-                    }],
-                    totalCalories: 456
-                }
-            ];
-            for (let meal of this.meals) {
-                for (let dish of meal.dishes) {
-                    if (!dish.food) {
-                        dish.food = {id: dish.foodId, name: '존재하지 않는 음식', calories: 0};
-                    }
-                }
-            }
+            MealService.getMeals(this.currentUser.username)
+                .then(meals => this.meals = meals)
+                .catch(err => alert(err.name + ': ' + err.message));
 
             if (this.$route.query.add) {
                 this.$nextTick(() => this.$refs['add-dropdown'].show());

@@ -119,6 +119,7 @@
     import {extend, ValidationObserver, ValidationProvider} from "vee-validate";
     import {oneOf} from "vee-validate/dist/rules";
     import {HHmmss, YYYYMMDD} from "@/utils/time-formatter";
+    import * as FoodService from "../services/food";
 
     extend('gt', {
         validate(value, args) {
@@ -243,11 +244,12 @@
             }
         },
         created() {
-            this.foods = [
-                {id: 'kimchi-soup', name: '김치찌개', calories: 456},
-                {id: 'rice', name: '쌀밥', calories: 313}
-            ];
-            this.foodOptions = this.foods.map(food => food.name);
+            FoodService.getFoods()
+                .then(foods => {
+                    this.foods = foods;
+                    this.foodOptions = this.foods.map(food => food.name);
+                })
+                .catch(err => alert(err.name + ': ' + err.message));
         }
     }
 </script>

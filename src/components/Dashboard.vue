@@ -103,6 +103,9 @@
 <script>
     import {mapGetters} from "vuex";
     import moment from "moment";
+    import * as HealthDataService from "../services/health-data";
+    import * as MealService from "../services/meal";
+    import * as FitnessService from "../services/fitness";
 
     export default {
         name: "dashboard",
@@ -171,73 +174,21 @@
             }
         },
         created() {
-            this.healthData = {
-                bmr: 1999,
-                bmi: 24.69,
-                bmiState: 'overweight'
-            };
-
-            this.meals = [
-                {
-                    date: moment().hours(16).toISOString(),
-                    dishes: [{
-                        foodId: 'kimchi-soup',
-                        amount: 1,
-                        food: {id: 'kimchi-soup', name: '김치찌개', calories: 456}
-                    }, {
-                        foodId: 'rice',
-                        amount: 1,
-                        food: {id: 'rice', name: '쌀밥', calories: 313}
-                    }],
-                    totalCalories: 769
-                },
-                {
-                    date: moment().subtract(1, 'days').hours(13).toISOString(),
-                    dishes: [{
-                        foodId: 'kimchi-soup',
-                        amount: 1,
-                        food: {id: 'kimchi-soup', name: '김치찌개', calories: 456}
-                    }, {
-                        foodId: 'rice',
-                        amount: 1,
-                        food: {id: 'rice', name: '쌀밥', calories: 313}
-                    }],
-                    totalCalories: 769
-                },
-                {
-                    date: moment().subtract(5, 'days').hours(11).toISOString(),
-                    dishes: [{
-                        foodId: 'kimchi-soup',
-                        amount: 1,
-                        food: {id: 'kimchi-soup', name: '김치찌개', calories: 456}
-                    }, {
-                        foodId: 'rice',
-                        amount: 1,
-                        food: {id: 'rice', name: '쌀밥', calories: 313}
-                    }],
-                    totalCalories: 769
-                },
-            ];
-            for (let meal of this.meals) {
-                for (let dish of meal.dishes) {
-                    if (!dish.food) {
-                        dish.food = {id: 'unknown', name: '존재하지 않는 음식', calories: 0};
+            HealthDataService.getHealthData(this.currentUser.username)
+                .then(healthData => this.healthData = healthData)
+                .catch(err => {
+                    if (err.name !== 'HealthDataNotFoundError') {
+                        alert(err);
                     }
-                }
-            }
+                });
 
-            this.fitnessList = [{
-                date: moment().hours(16).toISOString(),
-                exerciseId: 'push-up',
-                count: 10,
-                burntCalories: 300,
-                exercise: {id: 'push-up', name: '팔굽혀펴기', met: 3.8}
-            }];
-            for (let fitness of this.fitnessList) {
-                if (!fitness.exercise) {
-                    fitness.exercise = {id: fitness.exerciseId, name: '존재하지 않는 운동', met: 0};
-                }
-            }
+            MealService.getMeals(this.currentUser.username)
+                .then(meals => this.meals = meals)
+                .catch(err => alert(err.name + ': ' + err.message));
+
+            FitnessService.getFitnessList(this.currentUser.username)
+                .then(fitnessList => this.fitnessList = fitnessList)
+                .catch(err => alert(err.name + ': ' + err.message));
         }
     }
 </script>

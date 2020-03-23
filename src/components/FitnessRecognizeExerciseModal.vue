@@ -57,6 +57,7 @@
 <script>
     import * as timeFormatter from "../utils/time-formatter";
     import moment from "moment";
+    import * as ExerciseService from "../services/exercise";
 
     function defaultRecognizingData() {
         return {
@@ -158,11 +159,12 @@
             }
         },
         created() {
-            this.exercises = [
-                {id: 'push-up', name: '팔굽혀펴기', met: 3.8},
-                {id: 'squat', name: '스쿼트', met: 3.5}
-            ];
-            this.exerciseOptions = this.exercises.map(exercise => exercise.name);
+            ExerciseService.getExercises()
+                .then(exercises => {
+                    this.exercises = exercises;
+                    this.exerciseOptions = this.exercises.map(exercise => exercise.name);
+                })
+                .catch(err => alert(err.name + ': ' + err.message));
         }
     }
 </script>

@@ -125,12 +125,14 @@
                 정보 입력
             </b-button>
         </b-container>
-        <health-edit-modal ref="edit-modal"></health-edit-modal>
+        <health-edit-modal @updated="updateHealthData" ref="edit-modal"></health-edit-modal>
     </b-container>
 </template>
 
 <script>
     import HealthEditModal from "@/components/HealthEditModal";
+    import * as HealthDataService from "@/services/health-data";
+    import {mapGetters} from "vuex";
 
     export default {
         name: "health",
@@ -183,6 +185,9 @@
             }
         },
         computed: {
+            ...mapGetters({
+                currentUser: 'auth/currentUser'
+            }),
             bmiStateText() {
                 let bmiState = this.healthData.bmiState;
                 if (bmiState === this.bmiStates.underweight) return '저체중';
@@ -202,24 +207,19 @@
         methods: {
             showEditModal() {
                 this.$refs['edit-modal'].show();
+            },
+            updateHealthData(healthData) {
+                this.healthData = healthData;
             }
         },
         created() {
-            this.healthData = {
-                sex: 'male',
-                height: 180,
-                weight: 80,
-                ldlCholesterol: 100,
-                waist: 70,
-                bloodPressure: {min: 75, max: 120},
-                neutralFat: 160,
-                hdlCholesterol: 30,
-                fastingBloodSugar: 110,
-                bmr: 1999,
-                bmi: 24.69,
-                bmiState: 'overweight',
-                abnormalFields: ['neutralFat', 'hdlCholesterol', 'fastingBloodSugar']
-            };
+            HealthDataService.getHealthData(this.currentUser.username)
+                .then(healthData => this.healthData = healthData)
+                .catch(err => {
+                    if (err.name !== 'HealthDataNotFoundError') {
+                        alert(err);
+                    }
+                });
 
             if (this.$route.query.edit) {
                 this.$nextTick(() => this.showEditModal());
