@@ -3,6 +3,7 @@
         <vue-headful title="식사 관리 - 스마트 헬스케어"/>
         <h2>식사 관리</h2>
         <hr/>
+        <error-alerts ref="error-alerts"/>
         <b-container>
             <b-row>
                 <b-col class="mb-3" lg="4">
@@ -70,12 +71,13 @@
     import MealsEditMealModal from "@/components/MealsEditMealModal";
     import * as MealService from "@/services/meal";
     import {mapGetters} from "vuex";
+    import ErrorAlerts from "@/components/ErrorAlerts";
 
     const dateFormat = 'A h[시] mm[분]';
 
     export default {
         name: "meals",
-        components: {MealsEditMealModal, MealsRecognizeFoodsModal, MealsAddMealModal},
+        components: {ErrorAlerts, MealsEditMealModal, MealsRecognizeFoodsModal, MealsAddMealModal},
         data() {
             return {
                 selectedDate: moment().format(YYYYMMDD),
@@ -127,21 +129,24 @@
                         if (value) {
                             MealService.deleteMeal(this.currentUser.username, item.date)
                                 .then(() => this.updateMeals())
-                                .catch(err => alert(err.name + ': ' + err.message));
+                                .catch(err => this.handleError(err));
                         }
                     })
-                    .catch(err => alert(err.name + ': ' + err.message));
+                    .catch(err => this.handleError(err));
             },
             updateMeals() {
                 MealService.getMeals(this.currentUser.username)
                     .then(meals => this.meals = meals)
-                    .catch(err => alert(err.name + ': ' + err.message));
+                    .catch(err => this.handleError(err));
+            },
+            handleError(error) {
+                this.$refs['error-alert'].add(error);
             }
         },
         created() {
             MealService.getMeals(this.currentUser.username)
                 .then(meals => this.meals = meals)
-                .catch(err => alert(err.name + ': ' + err.message));
+                .catch(err => this.handleError(err));
 
             if (this.$route.query.add) {
                 this.$nextTick(() => this.$refs['add-dropdown'].show());

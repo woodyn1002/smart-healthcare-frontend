@@ -222,6 +222,8 @@
             </b-form>
         </ValidationObserver>
 
+        <error-alerts ref="error-alerts"/>
+
         <template v-slot:modal-footer="{ cancel }">
             <b-button @click="cancel()">
                 취소
@@ -238,6 +240,7 @@
     import {max_value, min_value, regex} from "vee-validate/dist/rules";
     import * as HealthDataService from "@/services/health-data";
     import {mapGetters} from "vuex";
+    import ErrorAlerts from "@/components/ErrorAlerts";
 
     extend('regex', regex);
     extend('max_value', max_value);
@@ -273,7 +276,7 @@
 
     export default {
         name: "health-edit-modal",
-        components: {ValidationObserver, ValidationProvider},
+        components: {ErrorAlerts, ValidationObserver, ValidationProvider},
         data() {
             return {
                 healthData: undefined,
@@ -312,9 +315,12 @@
                                     this.$emit('updated', healthData);
                                     this.hide();
                                 })
-                                .catch(err => alert(err.name + ': ' + err.message));
+                                .catch(err => this.handleError(err));
                         }
                     });
+            },
+            handleError(error) {
+                this.$refs['error-alerts'].add(error);
             }
         },
         created() {
@@ -325,7 +331,7 @@
                 })
                 .catch(err => {
                     if (err.name !== 'HealthDataNotFoundError') {
-                        alert(err);
+                        this.handleError(err);
                     }
                 });
         }

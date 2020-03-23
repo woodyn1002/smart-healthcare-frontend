@@ -192,6 +192,9 @@
                             this.$emit('ok', date, body);
                         }
                     });
+            },
+            handleError(error) {
+                this.$emit('error', error);
             }
         },
         created() {
@@ -200,7 +203,7 @@
                     this.exercises = exercises;
                     this.exerciseOptions = this.exercises.map(exercise => exercise.name);
                 })
-                .catch(err => alert(err.name + ': ' + err.message));
+                .catch(err => this.handleError(err));
         }
     }
 </script>

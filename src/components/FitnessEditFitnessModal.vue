@@ -1,6 +1,7 @@
 <template>
     <b-modal ref="modal" static title="운동 수정">
-        <fitness-form @ok="editFitness" ref="fitness-form"></fitness-form>
+        <fitness-form @error="handleError" @ok="editFitness" ref="fitness-form"></fitness-form>
+        <error-alerts ref="error-alerts"/>
 
         <template v-slot:modal-footer="{ cancel }">
             <b-button @click="cancel()">
@@ -17,10 +18,11 @@
     import FitnessForm from "@/components/FitnessForm";
     import * as FitnessService from "@/services/fitness";
     import {mapGetters} from "vuex";
+    import ErrorAlerts from "@/components/ErrorAlerts";
 
     export default {
         name: "fitness-edit-fitness-modal",
-        components: {FitnessForm},
+        components: {ErrorAlerts, FitnessForm},
         computed: {
             ...mapGetters({
                 currentUser: 'auth/currentUser'
@@ -44,7 +46,10 @@
                         this.$emit('updated');
                         this.hide();
                     })
-                    .catch(err => alert(err.name + ': ' + err.message));
+                    .catch(err => this.handleError(err));
+            },
+            handleError(error) {
+                this.$refs['error-alerts'].add(error);
             }
         }
     }

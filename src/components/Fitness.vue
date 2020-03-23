@@ -3,6 +3,7 @@
         <vue-headful title="운동 관리 - 스마트 헬스케어"/>
         <h2>운동 관리</h2>
         <hr/>
+        <error-alerts ref="error-alerts"/>
         <b-container>
             <b-row>
                 <b-col class="mb-3" lg="4">
@@ -71,12 +72,13 @@
     import FitnessEditFitnessModal from "@/components/FitnessEditFitnessModal";
     import * as FitnessService from "@/services/fitness";
     import {mapGetters} from "vuex";
+    import ErrorAlerts from "@/components/ErrorAlerts";
 
     const dateFormat = 'A h[시] mm[분]';
 
     export default {
         name: "fitness",
-        components: {FitnessEditFitnessModal, FitnessRecognizeExerciseModal, FitnessAddFitnessModal},
+        components: {ErrorAlerts, FitnessEditFitnessModal, FitnessRecognizeExerciseModal, FitnessAddFitnessModal},
         data() {
             return {
                 selectedDate: new Date(),
@@ -124,21 +126,24 @@
                         if (value) {
                             FitnessService.deleteFitness(this.currentUser.username, item.date)
                                 .then(() => this.updateFitnessList())
-                                .catch(err => alert(err.name + ': ' + err.message));
+                                .catch(err => this.handleError(err));
                         }
                     })
-                    .catch(err => alert(err.name + ': ' + err.message));
+                    .catch(err => this.handleError(err));
             },
             updateFitnessList() {
                 FitnessService.getFitnessList(this.currentUser.username)
                     .then(fitnessList => this.fitnessList = fitnessList)
-                    .catch(err => alert(err.name + ': ' + err.message));
+                    .catch(err => this.handleError(err));
+            },
+            handleError(error) {
+                this.$refs['error-alerts'].add(error);
             }
         },
         created() {
             FitnessService.getFitnessList(this.currentUser.username)
                 .then(fitnessList => this.fitnessList = fitnessList)
-                .catch(err => alert(err.name + ': ' + err.message));
+                .catch(err => this.handleError(err));
 
             if (this.$route.query.add) {
                 this.$nextTick(() => this.$refs['add-dropdown'].show());

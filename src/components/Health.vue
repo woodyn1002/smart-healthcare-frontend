@@ -3,6 +3,7 @@
         <vue-headful title="대사 관리 - 스마트 헬스케어"/>
         <h2>대사 관리</h2>
         <hr/>
+        <error-alerts ref="error-alerts"/>
         <b-container class="p-0 mb-3">
             <b-row>
                 <b-col sm="5">
@@ -133,10 +134,11 @@
     import HealthEditModal from "@/components/HealthEditModal";
     import * as HealthDataService from "@/services/health-data";
     import {mapGetters} from "vuex";
+    import ErrorAlerts from "@/components/ErrorAlerts";
 
     export default {
         name: "health",
-        components: {HealthEditModal},
+        components: {ErrorAlerts, HealthEditModal},
         data() {
             return {
                 healthDataTableFields: [
@@ -210,6 +212,9 @@
             },
             updateHealthData(healthData) {
                 this.healthData = healthData;
+            },
+            handleError(error) {
+                this.$refs['error-alerts'].add(error);
             }
         },
         created() {
@@ -217,7 +222,7 @@
                 .then(healthData => this.healthData = healthData)
                 .catch(err => {
                     if (err.name !== 'HealthDataNotFoundError') {
-                        alert(err);
+                        this.handleError(err);
                     }
                 });
 

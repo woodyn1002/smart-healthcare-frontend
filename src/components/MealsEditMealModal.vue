@@ -1,6 +1,7 @@
 <template>
     <b-modal ref="modal" static title="식사 수정">
-        <meal-form @ok="editMeal" ref="meal-form"></meal-form>
+        <meal-form @error="handleError" @ok="editMeal" ref="meal-form"></meal-form>
+        <error-alerts ref="error-alerts"/>
 
         <template v-slot:modal-footer="{ cancel }">
             <b-button @click="cancel()">
@@ -17,10 +18,11 @@
     import MealForm from "@/components/MealForm";
     import {mapGetters} from "vuex";
     import * as MealService from "@/services/meal";
+    import ErrorAlerts from "@/components/ErrorAlerts";
 
     export default {
         name: "meals-edit-meal-modal",
-        components: {MealForm},
+        components: {ErrorAlerts, MealForm},
         computed: {
             ...mapGetters({
                 currentUser: 'auth/currentUser'
@@ -44,7 +46,10 @@
                         this.$emit('updated');
                         this.hide();
                     })
-                    .catch(err => alert(err.name + ': ' + err.message));
+                    .catch(err => this.handleError(err));
+            },
+            handleError(error) {
+                this.$ref['error-alerts'].add(error);
             }
         }
     }

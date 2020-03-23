@@ -241,6 +241,9 @@
                     body.dishes.push({foodId: dish.foodId, amount: dish.amount});
 
                 this.$emit('ok', date, body);
+            },
+            handleError(error) {
+                this.$emit('error', error);
             }
         },
         created() {
@@ -249,7 +252,7 @@
                     this.foods = foods;
                     this.foodOptions = this.foods.map(food => food.name);
                 })
-                .catch(err => alert(err.name + ': ' + err.message));
+                .catch(err => this.handleError(err));
         }
     }
 </script>

@@ -43,6 +43,8 @@
             </template>
         </div>
 
+        <error-alerts ref="error-alerts"/>
+
         <template v-slot:modal-footer="{ cancel }">
             <b-button @click="cancel()">
                 취소
@@ -58,6 +60,7 @@
     import * as timeFormatter from "../utils/time-formatter";
     import moment from "moment";
     import * as ExerciseService from "../services/exercise";
+    import ErrorAlerts from "@/components/ErrorAlerts";
 
     function defaultRecognizingData() {
         return {
@@ -74,6 +77,7 @@
 
     export default {
         name: "fitness-recognize-exercise-modal",
+        components: {ErrorAlerts},
         data() {
             return {
                 exercises: [],
@@ -156,6 +160,9 @@
                 };
                 this.$emit('confirm', fitness);
                 this.hide();
+            },
+            handleError(error) {
+                this.$refs['error-alerts'].add(error);
             }
         },
         created() {
@@ -164,7 +171,7 @@
                     this.exercises = exercises;
                     this.exerciseOptions = this.exercises.map(exercise => exercise.name);
                 })
-                .catch(err => alert(err.name + ': ' + err.message));
+                .catch(err => this.handleError(err));
         }
     }
 </script>

@@ -6,6 +6,7 @@
             {{ currentUser.username }}님
         </h2>
         <hr/>
+        <error-alerts ref="error-alerts"/>
         <b-alert class="py-3" show v-if="!healthData.bmr && !healthData.bmi" variant="success">
             <h4 class="alert-heading">Welcome, {{ currentUser.username }}!</h4>
             <p>
@@ -106,9 +107,11 @@
     import * as HealthDataService from "../services/health-data";
     import * as MealService from "../services/meal";
     import * as FitnessService from "../services/fitness";
+    import ErrorAlerts from "@/components/ErrorAlerts";
 
     export default {
         name: "dashboard",
+        components: {ErrorAlerts},
         computed: {
             ...mapGetters({
                 currentUser: 'auth/currentUser'
@@ -171,6 +174,9 @@
                     datePrefix = days + '일 전';
 
                 return datePrefix + ', ' + moment(date).format('A h[시 경]');
+            },
+            handleError(error) {
+                this.$refs['error-alerts'].add(error);
             }
         },
         created() {
@@ -178,17 +184,17 @@
                 .then(healthData => this.healthData = healthData)
                 .catch(err => {
                     if (err.name !== 'HealthDataNotFoundError') {
-                        alert(err);
+                        this.handleError(err);
                     }
                 });
 
             MealService.getMeals(this.currentUser.username)
                 .then(meals => this.meals = meals)
-                .catch(err => alert(err.name + ': ' + err.message));
+                .catch(err => this.handleError(err));
 
             FitnessService.getFitnessList(this.currentUser.username)
                 .then(fitnessList => this.fitnessList = fitnessList)
-                .catch(err => alert(err.name + ': ' + err.message));
+                .catch(err => this.handleError(err));
         }
     }
 </script>
