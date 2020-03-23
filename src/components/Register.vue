@@ -108,10 +108,7 @@
                         </ValidationProvider>
                     </b-form-group>
 
-                    <b-alert :show="error.showAlert" @dismissed="error.showAlert=false" dismissible fade
-                             variant="danger">
-                        {{ error.message }}
-                    </b-alert>
+                    <error-alerts ref="error-alerts"/>
 
                     <b-button class="mr-1" type="submit" variant="primary">회원 가입</b-button>
                     <b-button to="/login" variant="light">로그인</b-button>
@@ -125,6 +122,7 @@
     import {mapActions} from "vuex";
     import {extend, localize, ValidationObserver, ValidationProvider} from "vee-validate";
     import {alpha_num, confirmed, email, max, min, required} from "vee-validate/dist/rules";
+    import ErrorAlerts from "@/components/ErrorAlerts";
 
     localize('ko');
 
@@ -137,7 +135,7 @@
 
     export default {
         name: "register",
-        components: {ValidationObserver, ValidationProvider},
+        components: {ErrorAlerts, ValidationObserver, ValidationProvider},
         data() {
             return {
                 form: {
@@ -146,10 +144,6 @@
                     passwordConfirm: '',
                     email: '',
                     fullName: ''
-                },
-                error: {
-                    showAlert: false,
-                    message: ''
                 }
             };
         },
@@ -174,13 +168,10 @@
                                     this.$router.push('/');
                                 },
                                 error => {
-                                    let message;
                                     if (error.name === 'UsernameExistError')
-                                        message = '이미 사용중인 사용자 이름입니다.';
-                                    else
-                                        message = error.name + ': ' + error.message;
-                                    this.error.message = message;
-                                    this.error.showAlert = true;
+                                        error = {message: '이미 사용중인 사용자 이름입니다.'};
+
+                                    this.$refs['error-alerts'].add(error);
                                 }
                             );
                         }

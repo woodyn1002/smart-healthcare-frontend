@@ -38,14 +38,7 @@
                         </ValidationProvider>
                     </b-form-group>
 
-                    <b-alert
-                            :show="error.showAlert"
-                            @dismissed="error.showAlert=false"
-                            dismissible
-                            fade
-                            variant="danger">
-                        {{ error.message }}
-                    </b-alert>
+                    <error-alerts ref="error-alerts"/>
 
                     <b-button class="mr-1" type="submit" variant="primary">로그인</b-button>
                     <b-button to="/register" variant="light">회원 가입</b-button>
@@ -59,6 +52,7 @@
     import {mapActions} from "vuex";
     import {extend, localize, ValidationObserver, ValidationProvider} from "vee-validate";
     import {required} from "vee-validate/dist/rules";
+    import ErrorAlerts from "@/components/ErrorAlerts";
 
     localize('ko');
 
@@ -66,16 +60,12 @@
 
     export default {
         name: "login",
-        components: {ValidationObserver, ValidationProvider},
+        components: {ErrorAlerts, ValidationObserver, ValidationProvider},
         data() {
             return {
                 form: {
                     username: '',
                     password: ''
-                },
-                error: {
-                    showAlert: false,
-                    message: ''
                 }
             }
         },
@@ -98,15 +88,12 @@
                                     this.$router.push('/dashboard');
                                 },
                                 error => {
-                                    let message;
                                     if (error.name === 'UserNotFoundError')
-                                        message = '등록되지 않은 사용자입니다.';
+                                        error = {message: '등록되지 않은 사용자입니다.'};
                                     else if (error.name === 'InvalidPasswordError')
-                                        message = '비밀번호가 일치하지 않습니다.';
-                                    else
-                                        message = error.name + ': ' + error.message;
-                                    this.error.message = message;
-                                    this.error.showAlert = true;
+                                        error = {message: '비밀번호가 일치하지 않습니다.'};
+
+                                    this.$refs['error-alerts'].add(error);
                                 }
                             );
                         }
