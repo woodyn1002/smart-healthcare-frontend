@@ -4,52 +4,57 @@
         <h2>대사 관리</h2>
         <hr/>
         <error-alerts ref="error-alerts"/>
-        <b-container class="p-0 mb-3">
-            <b-row>
-                <b-col sm="5">
-                    <b-card class="mb-3" header="기초대사량">
-                        <b-card-text class="display-4" v-if="healthData.bmr">{{ healthData.bmr }}kcal</b-card-text>
-                        <b-card-text v-else>성별과 생일, 신장, 체중 정보가 필요합니다.</b-card-text>
-                    </b-card>
 
-                    <b-card class="mb-3" header="비만도">
-                        <template v-if="healthData.bmi">
-                            <b-card-text class="display-4">{{ healthData.bmi }}</b-card-text>
+        <transition name="fade">
+            <template v-if="loadedHealthData">
+                <b-container class="p-0 mb-3">
+                    <b-row>
+                        <b-col sm="5">
+                            <b-card class="mb-3" header="기초대사량">
+                                <b-card-text class="display-4" v-if="healthData.bmr">{{ healthData.bmr }}kcal
+                                </b-card-text>
+                                <b-card-text v-else>성별과 생일, 신장, 체중 정보가 필요합니다.</b-card-text>
+                            </b-card>
 
-                            <h6>
-                                현재 체중
-                                <b-badge :variant="bmiStateVariant">{{ bmiStateText }}</b-badge>
-                            </h6>
-                            <b-progress class="mb-2">
-                                <b-progress-bar :label="String(healthData.bmi)" :value="healthData.bmi - 15"
-                                                :variant="bmiStateVariant" max="20"></b-progress-bar>
-                            </b-progress>
-                            <h6>정상 체중</h6>
-                            <b-progress>
-                                <b-progress-bar label="18.5~23" max="20" value="6" variant="success"></b-progress-bar>
-                            </b-progress>
-                        </template>
-                        <template v-else>
-                            <b-card-text>신장과 체중 정보가 필요합니다.</b-card-text>
-                        </template>
-                    </b-card>
-                </b-col>
-                <b-col>
-                    <b-card header="건강 정보">
-                        <b-table :fields="healthDataTableFields" :items="[healthData]" stacked>
-                            <template v-slot:cell(height)="data">
-                                <template v-if="data.value">{{ data.value }}cm</template>
-                                <template v-else>-</template>
-                            </template>
-                            <template v-slot:cell(weight)="data">
-                                <template v-if="data.value">{{ data.value }}kg</template>
-                                <template v-else>-</template>
-                            </template>
-                            <template v-slot:cell(ldlCholesterol)="data">
-                                <template v-if="data.value">{{ data.value }}mg/DI</template>
-                                <template v-else>-</template>
-                            </template>
-                            <template v-slot:cell(waist)="data">
+                            <b-card class="mb-3" header="비만도">
+                                <template v-if="healthData.bmi">
+                                    <b-card-text class="display-4">{{ healthData.bmi }}</b-card-text>
+
+                                    <h6>
+                                        현재 체중
+                                        <b-badge :variant="bmiStateVariant">{{ bmiStateText }}</b-badge>
+                                    </h6>
+                                    <b-progress class="mb-2">
+                                        <b-progress-bar :label="String(healthData.bmi)" :value="healthData.bmi - 15"
+                                                        :variant="bmiStateVariant" max="20"></b-progress-bar>
+                                    </b-progress>
+                                    <h6>정상 체중</h6>
+                                    <b-progress>
+                                        <b-progress-bar label="18.5~23" max="20" value="6"
+                                                        variant="success"></b-progress-bar>
+                                    </b-progress>
+                                </template>
+                                <template v-else>
+                                    <b-card-text>신장과 체중 정보가 필요합니다.</b-card-text>
+                                </template>
+                            </b-card>
+                        </b-col>
+                        <b-col>
+                            <b-card header="건강 정보">
+                                <b-table :fields="healthDataTableFields" :items="[healthData]" stacked>
+                                    <template v-slot:cell(height)="data">
+                                        <template v-if="data.value">{{ data.value }}cm</template>
+                                        <template v-else>-</template>
+                                    </template>
+                                    <template v-slot:cell(weight)="data">
+                                        <template v-if="data.value">{{ data.value }}kg</template>
+                                        <template v-else>-</template>
+                                    </template>
+                                    <template v-slot:cell(ldlCholesterol)="data">
+                                        <template v-if="data.value">{{ data.value }}mg/DI</template>
+                                        <template v-else>-</template>
+                                    </template>
+                                    <template v-slot:cell(waist)="data">
                                 <span id="waist">
                                     <template v-if="data.value">
                                         {{ data.value }}cm
@@ -59,11 +64,11 @@
                                     </template>
                                     <template v-else>-</template>
                                 </span>
-                                <b-tooltip target="waist">
-                                    남자 90cm, 여자 85cm 이상 비정상
-                                </b-tooltip>
-                            </template>
-                            <template v-slot:cell(bloodPressure)="data">
+                                        <b-tooltip target="waist">
+                                            남자 90cm, 여자 85cm 이상 비정상
+                                        </b-tooltip>
+                                    </template>
+                                    <template v-slot:cell(bloodPressure)="data">
                                 <span id="blood-pressure">
                                     <template v-if="data.value && data.value.min && data.value.max">
                                         {{ data.value.min }}~{{ data.value.max }}mmHg
@@ -73,9 +78,9 @@
                                     </template>
                                     <template v-else>-</template>
                                 </span>
-                                <b-tooltip target="blood-pressure">130/85mmHg 이상 비정상</b-tooltip>
-                            </template>
-                            <template v-slot:cell(neutralFat)="data">
+                                        <b-tooltip target="blood-pressure">130/85mmHg 이상 비정상</b-tooltip>
+                                    </template>
+                                    <template v-slot:cell(neutralFat)="data">
                                 <span id="neutral-fat">
                                     <template v-if="data.value">
                                         {{ data.value }}mg/DI
@@ -85,9 +90,9 @@
                                     </template>
                                     <template v-else>-</template>
                                 </span>
-                                <b-tooltip target="neutral-fat">150mg/DI 이상 비정상</b-tooltip>
-                            </template>
-                            <template v-slot:cell(hdlCholesterol)="data">
+                                        <b-tooltip target="neutral-fat">150mg/DI 이상 비정상</b-tooltip>
+                                    </template>
+                                    <template v-slot:cell(hdlCholesterol)="data">
                                 <span id="hdl-cholesterol">
                                     <template v-if="data.value">
                                         {{ data.value }}mg/DI
@@ -97,11 +102,11 @@
                                     </template>
                                     <template v-else>-</template>
                                 </span>
-                                <b-tooltip target="hdl-cholesterol">
-                                    남자 40mg/DI, 여자 50mg/DI 미만 비정상
-                                </b-tooltip>
-                            </template>
-                            <template v-slot:cell(fastingBloodSugar)="data">
+                                        <b-tooltip target="hdl-cholesterol">
+                                            남자 40mg/DI, 여자 50mg/DI 미만 비정상
+                                        </b-tooltip>
+                                    </template>
+                                    <template v-slot:cell(fastingBloodSugar)="data">
                                 <span id="fasting-blood-sugar">
                                     <template v-if="data.value">
                                         {{ data.value }}mg/DI
@@ -111,21 +116,25 @@
                                     </template>
                                     <template v-else>-</template>
                                 </span>
-                                <b-tooltip target="fasting-blood-sugar">
-                                    100mg/DI 이상 비정상
-                                </b-tooltip>
-                            </template>
-                        </b-table>
-                    </b-card>
-                </b-col>
-            </b-row>
-        </b-container>
+                                        <b-tooltip target="fasting-blood-sugar">
+                                            100mg/DI 이상 비정상
+                                        </b-tooltip>
+                                    </template>
+                                </b-table>
+                            </b-card>
+                        </b-col>
+                    </b-row>
+                </b-container>
+            </template>
+        </transition>
+
         <b-container class="text-right">
             <b-button @click="showEditModal()" pill variant="primary">
                 <b-icon-pencil></b-icon-pencil>
                 정보 입력
             </b-button>
         </b-container>
+
         <health-edit-modal @updated="updateHealthData" ref="edit-modal"></health-edit-modal>
     </b-container>
 </template>
@@ -141,6 +150,7 @@
         components: {ErrorAlerts, HealthEditModal},
         data() {
             return {
+                loadedHealthData: false,
                 healthDataTableFields: [
                     {key: 'height', label: '신장'},
                     {key: 'weight', label: '체중'},
@@ -224,7 +234,8 @@
                     if (err.name !== 'HealthDataNotFoundError') {
                         this.handleError(err);
                     }
-                });
+                })
+                .then(() => this.loadedHealthData = true);
 
             if (this.$route.query.edit) {
                 this.$nextTick(() => this.showEditModal());
@@ -234,5 +245,11 @@
 </script>
 
 <style scoped>
+    .fade-enter-active {
+        transition: opacity .5s;
+    }
 
+    .fade-enter {
+        opacity: 0;
+    }
 </style>

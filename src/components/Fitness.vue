@@ -24,27 +24,30 @@
                         </div>
                     </b-calendar>
                 </b-col>
-                <b-col>
-                    <b-table :fields="fitnessTableFields" :items="fitnessList" hover striped>
-                        <template v-slot:cell(date)="data">
-                            {{ formatDate(data.value) }}
-                        </template>
-                        <template v-slot:cell(exercise)="data">
-                            {{ data.value.name }} {{ data.item.count }}회, {{ formatSeconds(data.item.elapsedTime) }}
-                        </template>
-                        <template v-slot:cell(burntCalories)="data">
-                            {{ data.value }}kcal
-                        </template>
-                        <template v-slot:cell(buttons)="data">
-                            <b-button @click="editFitness(data.item)" class="m-1" size="sm">
-                                <b-icon-pencil></b-icon-pencil>
-                            </b-button>
-                            <b-button @click="deleteFitness(data.item)" class="m-1" size="sm">
-                                <b-icon-trash></b-icon-trash>
-                            </b-button>
-                        </template>
-                    </b-table>
-                </b-col>
+
+                <transition name="fade">
+                    <b-col v-if="loadedFitness">
+                        <b-table :fields="fitnessTableFields" :items="fitnessList" hover striped>
+                            <template v-slot:cell(date)="data">
+                                {{ formatDate(data.value) }}
+                            </template>
+                            <template v-slot:cell(exercise)="data">
+                                {{ data.value.name }} {{ data.item.count }}회, {{ formatSeconds(data.item.elapsedTime) }}
+                            </template>
+                            <template v-slot:cell(burntCalories)="data">
+                                {{ data.value }}kcal
+                            </template>
+                            <template v-slot:cell(buttons)="data">
+                                <b-button @click="editFitness(data.item)" class="m-1" size="sm">
+                                    <b-icon-pencil></b-icon-pencil>
+                                </b-button>
+                                <b-button @click="deleteFitness(data.item)" class="m-1" size="sm">
+                                    <b-icon-trash></b-icon-trash>
+                                </b-button>
+                            </template>
+                        </b-table>
+                    </b-col>
+                </transition>
             </b-row>
         </b-container>
 
@@ -81,6 +84,7 @@
         components: {ErrorAlerts, FitnessEditFitnessModal, FitnessRecognizeExerciseModal, FitnessAddFitnessModal},
         data() {
             return {
+                loadedFitness: false,
                 selectedDate: new Date(),
                 fitnessTableFields: [
                     {'key': 'date', 'label': '일시'},
@@ -143,7 +147,8 @@
         created() {
             FitnessService.getFitnessList(this.currentUser.username)
                 .then(fitnessList => this.fitnessList = fitnessList)
-                .catch(err => this.handleError(err));
+                .catch(err => this.handleError(err))
+                .then(() => this.loadedFitness = true);
 
             if (this.$route.query.add) {
                 this.$nextTick(() => this.$refs['add-dropdown'].show());
@@ -153,5 +158,11 @@
 </script>
 
 <style scoped>
+    .fade-enter-active {
+        transition: opacity .5s;
+    }
 
+    .fade-enter {
+        opacity: 0;
+    }
 </style>

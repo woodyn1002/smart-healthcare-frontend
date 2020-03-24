@@ -6,89 +6,100 @@
             {{ currentUser.username }}님
         </h2>
         <hr/>
-        <error-alerts ref="error-alerts"/>
-        <b-alert class="py-3" show v-if="!healthData.bmr && !healthData.bmi" variant="success">
-            <h4 class="alert-heading">Welcome, {{ currentUser.username }}!</h4>
-            <p>
-                사용에 앞서 건강 정보를 입력해주세요.<br/>
-                대사 관리 페이지에서 건강 정보를 입력하면 기초대사량과 비만도가 계산됩니다.
-            </p>
-            <hr/>
-            <b-button to="/health?edit=true" variant="success">
-                <b-icon-pencil></b-icon-pencil>
-                정보 입력
-            </b-button>
-        </b-alert>
-        <b-card class="mb-3" header="대사 정보" v-else>
-            <b-row>
-                <b-col class="text-center my-auto" v-if="healthData.bmr">
-                    <small class="text-muted">기초대사량</small>
-                    <h4>{{ healthData.bmr }}kcal</h4>
-                </b-col>
-                <b-col class="text-center my-auto" v-if="healthData.bmi">
-                    <small class="text-muted">비만도</small>
-                    <h4>{{ healthData.bmi }}</h4>
-                    <b-badge :variant="bmiStateVariant">{{ bmiStateText }}</b-badge>
-                </b-col>
-            </b-row>
-            <template v-slot:footer>
-                <b-button class="float-right" pill to="health" variant="primary">
-                    <b-icon-pencil></b-icon-pencil>
-                    대사 관리
-                </b-button>
+        <transition name="fade">
+            <template v-if="loadedHealthData">
+                <b-alert class="py-3" show v-if="!healthData.bmr && !healthData.bmi" variant="success">
+                    <h4 class="alert-heading">Welcome, {{ currentUser.username }}!</h4>
+                    <p>
+                        사용에 앞서 건강 정보를 입력해주세요.<br/>
+                        대사 관리 페이지에서 건강 정보를 입력하면 기초대사량과 비만도가 계산됩니다.
+                    </p>
+                    <hr/>
+                    <b-button to="/health?edit=true" variant="success">
+                        <b-icon-pencil></b-icon-pencil>
+                        정보 입력
+                    </b-button>
+                </b-alert>
+                <b-card class="mb-3" header="대사 정보" v-else>
+                    <b-row>
+                        <b-col class="text-center my-auto" v-if="healthData.bmr">
+                            <small class="text-muted">기초대사량</small>
+                            <h4>{{ healthData.bmr }}kcal</h4>
+                        </b-col>
+                        <b-col class="text-center my-auto" v-if="healthData.bmi">
+                            <small class="text-muted">비만도</small>
+                            <h4>{{ healthData.bmi }}</h4>
+                            <b-badge :variant="bmiStateVariant">{{ bmiStateText }}</b-badge>
+                        </b-col>
+                    </b-row>
+                    <template v-slot:footer>
+                        <b-button class="float-right" pill to="health" variant="primary">
+                            <b-icon-pencil></b-icon-pencil>
+                            대사 관리
+                        </b-button>
+                    </template>
+                </b-card>
             </template>
-        </b-card>
+        </transition>
         <b-card-group class="mb-3" deck>
-            <b-card header="최근 식사">
-                <b-table :fields="mealsTableFields" :items="meals">
-                    <template v-slot:cell(date)="data">
-                        {{ toSimpleDateText(data.value) }}
-                    </template>
-                    <template v-slot:cell(dishes)="data">
-                        {{ data.value.map(dish => dish.food.name).join(', ') }}
-                    </template>
-                    <template v-slot:cell(totalCalories)="data">
-                        {{ data.value }}kcal
-                    </template>
-                </b-table>
-                <template v-slot:footer>
-                    <div class="float-right">
-                        <b-button class="mr-2" pill size="sm" to="meals">
-                            <b-icon-calendar></b-icon-calendar>
-                            식사 관리
-                        </b-button>
-                        <b-button pill size="sm" to="/meals?add=true" variant="outline-secondary">
-                            <b-icon-plus></b-icon-plus>
-                            추가
-                        </b-button>
-                    </div>
+            <transition name="fade">
+                <template v-if="loadedMeals">
+                    <b-card header="최근 식사">
+                        <b-table :fields="mealsTableFields" :items="meals">
+                            <template v-slot:cell(date)="data">
+                                {{ toSimpleDateText(data.value) }}
+                            </template>
+                            <template v-slot:cell(dishes)="data">
+                                {{ data.value.map(dish => dish.food.name).join(', ') }}
+                            </template>
+                            <template v-slot:cell(totalCalories)="data">
+                                {{ data.value }}kcal
+                            </template>
+                        </b-table>
+                        <template v-slot:footer>
+                            <div class="float-right">
+                                <b-button class="mr-2" pill size="sm" to="meals">
+                                    <b-icon-calendar></b-icon-calendar>
+                                    식사 관리
+                                </b-button>
+                                <b-button pill size="sm" to="/meals?add=true" variant="outline-secondary">
+                                    <b-icon-plus></b-icon-plus>
+                                    추가
+                                </b-button>
+                            </div>
+                        </template>
+                    </b-card>
                 </template>
-            </b-card>
-            <b-card header="최근 운동">
-                <b-table :fields="fitnessTableFields" :items="fitnessList">
-                    <template v-slot:cell(date)="data">
-                        {{ toSimpleDateText(data.value) }}
-                    </template>
-                    <template v-slot:cell(exercise)="data">
-                        {{ data.value.name }} {{ data.item.count }}회
-                    </template>
-                    <template v-slot:cell(burntCalories)="data">
-                        {{ data.value }}kcal
-                    </template>
-                </b-table>
-                <template v-slot:footer>
-                    <div class="float-right">
-                        <b-button class="mr-2" pill size="sm" to="fitness">
-                            <b-icon-calendar></b-icon-calendar>
-                            운동 관리
-                        </b-button>
-                        <b-button pill size="sm" to="/fitness?add=true" variant="outline-secondary">
-                            <b-icon-plus></b-icon-plus>
-                            추가
-                        </b-button>
-                    </div>
+            </transition>
+            <transition name="fade">
+                <template v-if="loadedFitness">
+                    <b-card header="최근 운동">
+                        <b-table :fields="fitnessTableFields" :items="fitnessList">
+                            <template v-slot:cell(date)="data">
+                                {{ toSimpleDateText(data.value) }}
+                            </template>
+                            <template v-slot:cell(exercise)="data">
+                                {{ data.value.name }} {{ data.item.count }}회
+                            </template>
+                            <template v-slot:cell(burntCalories)="data">
+                                {{ data.value }}kcal
+                            </template>
+                        </b-table>
+                        <template v-slot:footer>
+                            <div class="float-right">
+                                <b-button class="mr-2" pill size="sm" to="fitness">
+                                    <b-icon-calendar></b-icon-calendar>
+                                    운동 관리
+                                </b-button>
+                                <b-button pill size="sm" to="/fitness?add=true" variant="outline-secondary">
+                                    <b-icon-plus></b-icon-plus>
+                                    추가
+                                </b-button>
+                            </div>
+                        </template>
+                    </b-card>
                 </template>
-            </b-card>
+            </transition>
         </b-card-group>
         <b-card class="mb-3" header="일별 차트">
             <b-card-text>
@@ -98,6 +109,7 @@
             <b-card-text>
             </b-card-text>
         </b-card>
+        <error-alerts ref="error-alerts"/>
     </b-container>
 </template>
 
@@ -134,6 +146,9 @@
         },
         data() {
             return {
+                loadedHealthData: false,
+                loadedMeals: false,
+                loadedFitness: false,
                 healthData: {
                     bmr: undefined,
                     bmi: undefined,
@@ -186,19 +201,28 @@
                     if (err.name !== 'HealthDataNotFoundError') {
                         this.handleError(err);
                     }
-                });
+                })
+                .then(() => this.loadedHealthData = true);
 
             MealService.getMeals(this.currentUser.username)
                 .then(meals => this.meals = meals)
-                .catch(err => this.handleError(err));
+                .catch(err => this.handleError(err))
+                .then(() => this.loadedMeals = true);
 
             FitnessService.getFitnessList(this.currentUser.username)
                 .then(fitnessList => this.fitnessList = fitnessList)
-                .catch(err => this.handleError(err));
+                .catch(err => this.handleError(err))
+                .then(() => this.loadedFitness = true);
         }
     }
 </script>
 
 <style scoped>
+    .fade-enter-active {
+        transition: opacity .5s;
+    }
 
+    .fade-enter {
+        opacity: 0;
+    }
 </style>

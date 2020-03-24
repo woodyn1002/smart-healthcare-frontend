@@ -24,29 +24,33 @@
                         </div>
                     </b-calendar>
                 </b-col>
-                <b-col>
-                    <b-table :fields="mealsTableFields" :items="meals" hover striped>
-                        <template v-slot:cell(date)="data">
-                            {{ formatDate(data.value) }}
-                        </template>
-                        <template v-slot:cell(dishes)="data">
-                            {{ data.value.map(dish => dish.food.name).join(', ') }}
-                        </template>
-                        <template v-slot:cell(totalCalories)="data">
-                            {{ data.value }}kcal
-                        </template>
-                        <template v-slot:cell(buttons)="data">
-                            <b-button @click="editMeal(data.item)" class="m-1" size="sm">
-                                <b-icon-pencil></b-icon-pencil>
-                            </b-button>
-                            <b-button @click="deleteMeal(data.item)" class="m-1" size="sm">
-                                <b-icon-trash></b-icon-trash>
-                            </b-button>
-                        </template>
-                    </b-table>
-                </b-col>
+
+                <transition name="fade">
+                    <b-col v-if="loadedMeals">
+                        <b-table :fields="mealsTableFields" :items="meals" hover striped>
+                            <template v-slot:cell(date)="data">
+                                {{ formatDate(data.value) }}
+                            </template>
+                            <template v-slot:cell(dishes)="data">
+                                {{ data.value.map(dish => dish.food.name).join(', ') }}
+                            </template>
+                            <template v-slot:cell(totalCalories)="data">
+                                {{ data.value }}kcal
+                            </template>
+                            <template v-slot:cell(buttons)="data">
+                                <b-button @click="editMeal(data.item)" class="m-1" size="sm">
+                                    <b-icon-pencil></b-icon-pencil>
+                                </b-button>
+                                <b-button @click="deleteMeal(data.item)" class="m-1" size="sm">
+                                    <b-icon-trash></b-icon-trash>
+                                </b-button>
+                            </template>
+                        </b-table>
+                    </b-col>
+                </transition>
             </b-row>
         </b-container>
+
         <meals-recognize-foods-modal
                 @confirm="showAddMealModal"
                 ref="recognize-foods-modal"
@@ -80,6 +84,7 @@
         components: {ErrorAlerts, MealsEditMealModal, MealsRecognizeFoodsModal, MealsAddMealModal},
         data() {
             return {
+                loadedMeals: false,
                 selectedDate: moment().format(YYYYMMDD),
                 mealsTableFields: [
                     {'key': 'date', 'label': '일시'},
@@ -146,7 +151,8 @@
         created() {
             MealService.getMeals(this.currentUser.username)
                 .then(meals => this.meals = meals)
-                .catch(err => this.handleError(err));
+                .catch(err => this.handleError(err))
+                .then(() => this.loadedMeals = true);
 
             if (this.$route.query.add) {
                 this.$nextTick(() => this.$refs['add-dropdown'].show());
@@ -156,5 +162,11 @@
 </script>
 
 <style scoped>
+    .fade-enter-active {
+        transition: opacity .5s;
+    }
 
+    .fade-enter {
+        opacity: 0;
+    }
 </style>
