@@ -103,7 +103,9 @@
         methods: {
             loadFitnessList() {
                 this.loadedFitness = false;
-                FitnessService.getFitnessList(this.currentUser.username, {date: this.selectedDate})
+
+                let params = {date: this.selectedDate, sortByDates: true};
+                FitnessService.getFitnessList(this.currentUser.username, params)
                     .then(fitnessList => this.fitnessList = fitnessList)
                     .catch(err => this.handleError(err))
                     .then(() => this.loadedFitness = true);

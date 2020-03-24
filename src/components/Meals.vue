@@ -103,7 +103,9 @@
         methods: {
             loadMeals() {
                 this.loadedMeals = false;
-                MealService.getMeals(this.currentUser.username, {date: this.selectedDate})
+
+                let params = {date: this.selectedDate, sortByDates: true};
+                MealService.getMeals(this.currentUser.username, params)
                     .then(meals => this.meals = meals)
                     .catch(err => this.handleError(err))
                     .then(() => this.loadedMeals = true);
