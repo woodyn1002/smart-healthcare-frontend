@@ -44,7 +44,7 @@
             </b-form-group>
 
             <b-form-group label="일시" label-for="date-input">
-                <b-form-datepicker id="date-input" v-model="form.date" value-as-date></b-form-datepicker>
+                <b-form-datepicker id="date-input" v-model="form.date"></b-form-datepicker>
             </b-form-group>
 
             <b-row>
@@ -94,7 +94,7 @@
 <script>
     import moment from "moment";
     import {extend, localize, ValidationObserver, ValidationProvider} from "vee-validate";
-    import {HHmmss} from "../utils/time-formatter";
+    import {HHmmss, YYYYMMDD} from "../utils/time-formatter";
     import {min_value, oneOf} from "vee-validate/dist/rules";
     import * as ExerciseService from "@/services/exercise";
 
@@ -130,6 +130,9 @@
             }
         },
         computed: {
+            datetime() {
+                return moment(this.form.date + ' ' + this.form.startTime, YYYYMMDD + ' ' + HHmmss);
+            },
             selectedExercise() {
                 return this.exercises.find(exercise => exercise.name === this.form.exerciseName);
             },
@@ -155,7 +158,7 @@
         methods: {
             initializeForm(date, fitness) {
                 this.form = defaultFormData();
-                this.form.date = date;
+                this.form.date = moment(date).format(YYYYMMDD);
 
                 if (fitness) {
                     if (fitness.date) {
@@ -181,7 +184,7 @@
                 this.$refs['form-validation'].validate()
                     .then(passed => {
                         if (passed) {
-                            let date = moment(this.form.startTime, HHmmss).toISOString();
+                            let date = this.datetime.toISOString();
                             let body = {
                                 exerciseId: this.selectedExercise.id,
                                 burntCalories: this.burntCalories,
