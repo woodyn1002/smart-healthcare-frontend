@@ -3,14 +3,15 @@ import {authHeader} from "@/services/auth";
 
 const API_URL = 'http://localhost:3000/v1';
 
-export function request(method, path, body) {
+export function request(method, path, options) {
     let config = {
         method: method,
         url: API_URL + path,
         headers: authHeader()
     };
-    if (body) {
-        config.data = body;
+    if (options) {
+        if (options.params) config.params = options.params;
+        if (options.body) config.data = options.body;
     }
 
     return axios(config)

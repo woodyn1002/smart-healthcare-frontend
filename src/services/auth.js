@@ -10,11 +10,11 @@ export function authHeader() {
 }
 
 export function register(body) {
-    return apiClient.request('post', '/auth/register', body);
+    return apiClient.request('post', '/auth/register', {body});
 }
 
 export function login(body) {
-    return apiClient.request('post', '/auth/login', body)
+    return apiClient.request('post', '/auth/login', {body})
         .then(user => {
             localStorage.setItem('user', JSON.stringify(user));
             return user;

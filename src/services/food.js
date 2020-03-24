@@ -9,11 +9,11 @@ export function getFood(foodId) {
 }
 
 export function createFood(body) {
-    return apiClient.request('put', '/foods', body);
+    return apiClient.request('put', '/foods', {body});
 }
 
 export function updateFood(foodId, body) {
-    return apiClient.request('put', `/foods/${foodId}`, body);
+    return apiClient.request('put', `/foods/${foodId}`, {body});
 }
 
 export function deleteFood(foodId) {

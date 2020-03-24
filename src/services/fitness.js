@@ -7,8 +7,8 @@ function resolveInvalidExercises(fitness) {
     return fitness;
 }
 
-export function getFitnessList(username) {
-    return apiClient.request('get', `/users/${username}/fitness`)
+export function getFitnessList(username, params) {
+    return apiClient.request('get', `/users/${username}/fitness`, {params})
         .then(fitnessList => {
             for (let fitness of fitnessList) {
                 resolveInvalidExercises(fitness);
@@ -23,12 +23,12 @@ export function getFitness(username, date) {
 }
 
 export function createFitness(username, date, body) {
-    return apiClient.request('post', `/users/${username}/fitness/${date}`, body)
+    return apiClient.request('post', `/users/${username}/fitness/${date}`, {body})
         .then(fitness => resolveInvalidExercises(fitness));
 }
 
 export function updateFitness(username, date, body) {
-    return apiClient.request('put', `/users/${username}/fitness/${date}`, body)
+    return apiClient.request('put', `/users/${username}/fitness/${date}`, {body})
         .then(fitness => resolveInvalidExercises(fitness));
 }
 

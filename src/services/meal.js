@@ -9,8 +9,8 @@ function resolveInvalidFoods(meal) {
     return meal;
 }
 
-export function getMeals(username) {
-    return apiClient.request('get', `/users/${username}/meals`)
+export function getMeals(username, params) {
+    return apiClient.request('get', `/users/${username}/meals`, {params})
         .then(meals => {
             for (let meal of meals) {
                 resolveInvalidFoods(meal);
@@ -25,12 +25,12 @@ export function getMeal(username, date) {
 }
 
 export function createMeal(username, date, body) {
-    return apiClient.request('post', `/users/${username}/meals/${date}`, body)
+    return apiClient.request('post', `/users/${username}/meals/${date}`, {body})
         .then(meal => resolveInvalidFoods(meal));
 }
 
 export function updateMeal(username, date, body) {
-    return apiClient.request('put', `/users/${username}/meals/${date}`, body)
+    return apiClient.request('put', `/users/${username}/meals/${date}`, {body})
         .then(meal => resolveInvalidFoods(meal));
 }
 

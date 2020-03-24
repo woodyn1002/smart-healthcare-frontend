@@ -9,11 +9,11 @@ export function getExercise(exerciseId) {
 }
 
 export function createExercise(body) {
-    return apiClient.request('put', '/exercises', body);
+    return apiClient.request('put', '/exercises', {body});
 }
 
 export function updateExercise(exerciseId, body) {
-    return apiClient.request('put', `/exercises/${exerciseId}`, body);
+    return apiClient.request('put', `/exercises/${exerciseId}`, {body});
 }
 
 export function deleteExercise(exerciseId) {

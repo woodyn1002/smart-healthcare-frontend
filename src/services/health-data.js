@@ -14,11 +14,11 @@ export function getHealthData(username) {
 export function createOrUpdateHealthData(username, body) {
     return apiClient.request('get', `/users/${username}/health-data`)
         .then(() => {
-            return apiClient.request('put', `/users/${username}/health-data`, body);
+            return apiClient.request('put', `/users/${username}/health-data`, {body});
         })
         .catch(err => {
             if (err.name === 'HealthDataNotFoundError') {
-                return apiClient.request('post', `/users/${username}/health-data`, body);
+                return apiClient.request('post', `/users/${username}/health-data`, {body});
             } else {
                 throw err;
             }
