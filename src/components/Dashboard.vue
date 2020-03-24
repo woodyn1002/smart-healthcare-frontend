@@ -204,12 +204,12 @@
                 })
                 .then(() => this.loadedHealthData = true);
 
-            MealService.getMeals(this.currentUser.username)
+            MealService.getMeals(this.currentUser.username, {limit: 3})
                 .then(meals => this.meals = meals)
                 .catch(err => this.handleError(err))
                 .then(() => this.loadedMeals = true);
 
-            FitnessService.getFitnessList(this.currentUser.username)
+            FitnessService.getFitnessList(this.currentUser.username, {limit: 3})
                 .then(fitnessList => this.fitnessList = fitnessList)
                 .catch(err => this.handleError(err))
                 .then(() => this.loadedFitness = true);
