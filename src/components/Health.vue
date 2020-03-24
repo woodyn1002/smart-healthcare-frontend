@@ -224,7 +224,10 @@
                 this.healthData = healthData;
             },
             handleError(error) {
-                this.$refs['error-alerts'].add(error);
+                let alerts = this.$refs['error-alerts'];
+                if (alerts) {
+                    alerts.add(error);
+                }
             }
         },
         created() {

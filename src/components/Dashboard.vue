@@ -191,7 +191,10 @@
                 return datePrefix + ', ' + moment(date).format('A h[시 경]');
             },
             handleError(error) {
-                this.$refs['error-alerts'].add(error);
+                let alerts = this.$refs['error-alerts'];
+                if (alerts) {
+                    alerts.add(error);
+                }
             }
         },
         created() {

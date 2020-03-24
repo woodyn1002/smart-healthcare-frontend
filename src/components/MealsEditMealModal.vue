@@ -49,7 +49,10 @@
                     .catch(err => this.handleError(err));
             },
             handleError(error) {
-                this.$ref['error-alerts'].add(error);
+                let alerts = this.$refs['error-alerts'];
+                if (alerts) {
+                    alerts.add(error);
+                }
             }
         }
     }
