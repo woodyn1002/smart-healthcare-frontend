@@ -1,7 +1,27 @@
 import axios from "axios";
+import store from "./stores";
+import router from "./routes";
 import {authHeader} from "@/services/auth";
 
 const API_URL = 'http://localhost:3000/v1';
+
+axios.interceptors.response.use(
+    response => {
+        return response;
+    }, async error => {
+        if (error.response.status !== 401)
+            return Promise.reject(error);
+
+        if (error.response.data.error.name === 'TokenExpiredError') {
+            await store.dispatch('auth/logout');
+
+            if (router.currentRoute.name !== 'login') {
+                await router.push('/login');
+            }
+
+            return Promise.reject(error);
+        }
+    });
 
 export function request(method, path, options) {
     let config = {
