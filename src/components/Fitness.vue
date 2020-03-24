@@ -7,7 +7,7 @@
         <b-container>
             <b-row>
                 <b-col class="mb-3" lg="4">
-                    <b-calendar block v-model="selectedDate">
+                    <b-calendar @selected="loadFitnessList()" block v-model="selectedDate">
                         <div class="d-flex" dir="ltr">
                             <b-dropdown class="ml-auto" ref="add-dropdown" variant="outline-primary">
                                 <template v-slot:button-content>
@@ -56,11 +56,11 @@
                 ref="recognize-exercise-modal"
         ></fitness-recognize-exercise-modal>
         <fitness-add-fitness-modal
-                @created="updateFitnessList()"
+                @created="loadFitnessList()"
                 ref="add-fitness-modal"
         ></fitness-add-fitness-modal>
         <fitness-edit-fitness-modal
-                @updated="updateFitnessList()"
+                @updated="loadFitnessList()"
                 ref="edit-fitness-modal"
         ></fitness-edit-fitness-modal>
     </b-container>
@@ -101,6 +101,13 @@
             })
         },
         methods: {
+            loadFitnessList() {
+                this.loadedFitness = false;
+                FitnessService.getFitnessList(this.currentUser.username, {date: this.selectedDate})
+                    .then(fitnessList => this.fitnessList = fitnessList)
+                    .catch(err => this.handleError(err))
+                    .then(() => this.loadedFitness = true);
+            },
             formatSeconds(time) {
                 return timeFormatter.simplify(time);
             },
@@ -129,15 +136,10 @@
                     .then(value => {
                         if (value) {
                             FitnessService.deleteFitness(this.currentUser.username, item.date)
-                                .then(() => this.updateFitnessList())
+                                .then(() => this.loadFitnessList())
                                 .catch(err => this.handleError(err));
                         }
                     })
-                    .catch(err => this.handleError(err));
-            },
-            updateFitnessList() {
-                FitnessService.getFitnessList(this.currentUser.username)
-                    .then(fitnessList => this.fitnessList = fitnessList)
                     .catch(err => this.handleError(err));
             },
             handleError(error) {
@@ -145,10 +147,7 @@
             }
         },
         created() {
-            FitnessService.getFitnessList(this.currentUser.username)
-                .then(fitnessList => this.fitnessList = fitnessList)
-                .catch(err => this.handleError(err))
-                .then(() => this.loadedFitness = true);
+            this.loadFitnessList();
 
             if (this.$route.query.add) {
                 this.$nextTick(() => this.$refs['add-dropdown'].show());

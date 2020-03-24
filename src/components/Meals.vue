@@ -7,7 +7,7 @@
         <b-container>
             <b-row>
                 <b-col class="mb-3" lg="4">
-                    <b-calendar block v-model="selectedDate">
+                    <b-calendar @selected="loadMeals()" block v-model="selectedDate">
                         <div class="d-flex" dir="ltr">
                             <b-dropdown class="ml-auto" ref="add-dropdown" variant="outline-primary">
                                 <template v-slot:button-content>
@@ -56,11 +56,11 @@
                 ref="recognize-foods-modal"
         ></meals-recognize-foods-modal>
         <meals-add-meal-modal
-                @created="updateMeals()"
+                @created="loadMeals()"
                 ref="add-meal-modal"
         ></meals-add-meal-modal>
         <meals-edit-meal-modal
-                @updated="updateMeals()"
+                @updated="loadMeals()"
                 ref="edit-meal-modal"
         ></meals-edit-meal-modal>
     </b-container>
@@ -101,6 +101,13 @@
             })
         },
         methods: {
+            loadMeals() {
+                this.loadedMeals = false;
+                MealService.getMeals(this.currentUser.username, {date: this.selectedDate})
+                    .then(meals => this.meals = meals)
+                    .catch(err => this.handleError(err))
+                    .then(() => this.loadedMeals = true);
+            },
             formatDate(date) {
                 return moment(date).format(dateFormat);
             },
@@ -133,15 +140,10 @@
                     .then(value => {
                         if (value) {
                             MealService.deleteMeal(this.currentUser.username, item.date)
-                                .then(() => this.updateMeals())
+                                .then(() => this.loadMeals())
                                 .catch(err => this.handleError(err));
                         }
                     })
-                    .catch(err => this.handleError(err));
-            },
-            updateMeals() {
-                MealService.getMeals(this.currentUser.username)
-                    .then(meals => this.meals = meals)
                     .catch(err => this.handleError(err));
             },
             handleError(error) {
@@ -149,10 +151,7 @@
             }
         },
         created() {
-            MealService.getMeals(this.currentUser.username)
-                .then(meals => this.meals = meals)
-                .catch(err => this.handleError(err))
-                .then(() => this.loadedMeals = true);
+            this.loadMeals();
 
             if (this.$route.query.add) {
                 this.$nextTick(() => this.$refs['add-dropdown'].show());
