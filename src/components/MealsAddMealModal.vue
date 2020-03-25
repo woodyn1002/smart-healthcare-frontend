@@ -1,6 +1,5 @@
 <template>
     <b-modal ref="modal" static title="식사 등록">
-        1
         <meal-form @error="handleError" @ok="addMeal" ref="meal-form"></meal-form>
         <error-alerts ref="error-alerts"/>
 
