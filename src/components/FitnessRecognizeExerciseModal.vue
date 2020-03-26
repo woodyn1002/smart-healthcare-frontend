@@ -38,7 +38,7 @@
             <template v-else-if="recognizing.state === states.finished">
                 <p class="lead">운동을 마쳤습니다</p>
                 <p>
-                    {{ selectedExercise.name }} {{ recognizing.count }}회, {{ simplify(recognizing.elapsedTime) }}
+                    {{ selectedExercise.name }} {{ recognizing.count }}회, {{ formattedElapsedTime }}
                 </p>
             </template>
         </div>
