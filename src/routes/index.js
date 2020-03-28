@@ -8,6 +8,7 @@ import Dashboard from "../components/Dashboard";
 import Health from "../components/Health";
 import Meals from "../components/Meals";
 import Fitness from "@/components/Fitness";
+import EditUser from "@/components/EditUser";
 
 Vue.use(Router);
 
@@ -32,6 +33,11 @@ export default new Router({
         {
             path: '/login',
             component: Login
+        },
+        {
+            path: '/edit-user',
+            component: EditUser,
+            beforeEnter: requireAuth
         },
         {
             path: '/dashboard',

@@ -21,7 +21,7 @@
                                 <template v-slot:button-content>
                                     <b-icon-person-fill></b-icon-person-fill>
                                 </template>
-                                <b-dropdown-item href="#">정보 변경</b-dropdown-item>
+                                <b-dropdown-item to="/edit-user">정보 변경</b-dropdown-item>
                                 <b-dropdown-item @click="logout()">로그아웃</b-dropdown-item>
                             </b-nav-item-dropdown>
                         </template>
