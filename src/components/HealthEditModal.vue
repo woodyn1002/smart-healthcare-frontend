@@ -241,6 +241,8 @@
     import * as HealthDataService from "@/services/health-data";
     import {mapGetters} from "vuex";
     import ErrorAlerts from "@/components/ErrorAlerts";
+    import {YYYYMMDD} from "@/utils/time-formatter";
+    import moment from "moment";
 
     extend('regex', regex);
     extend('max_value', max_value);
@@ -297,6 +299,10 @@
             },
             initializeForm() {
                 this.form = (this.healthData) ? clone(this.healthData) : defaultFormData();
+                if (this.form.birthdate && this.form.birthdate.date) {
+                    this.form.birthdate.date = moment(this.healthData.birthdate.date).format(YYYYMMDD);
+                }
+
                 this.$refs['form-validation'].reset();
             },
             handleOk(event) {
