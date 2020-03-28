@@ -18,9 +18,8 @@ axios.interceptors.response.use(
             if (router.currentRoute.name !== 'login') {
                 await router.push('/login');
             }
-
-            return Promise.reject(error);
         }
+        return Promise.reject(error);
     });
 
 export function request(method, path, options) {
