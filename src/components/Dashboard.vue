@@ -3,7 +3,7 @@
         <vue-headful title="스마트 헬스케어"/>
         <h2>
             <b-icon-person-fill></b-icon-person-fill>
-            {{ currentUser.username }}님
+            {{ currentUser.fullName }}님
         </h2>
         <hr/>
         <transition name="fade">
