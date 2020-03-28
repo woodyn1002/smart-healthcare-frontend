@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <b-navbar class="mb-3" sticky toggleable="lg" type="light" variant="light">
+        <b-navbar sticky toggleable="lg" type="light" variant="light">
             <b-container>
                 <b-navbar-brand :to="loggedIn ? '/dashboard' : '/'">
                     Smart Healthcare

@@ -1,5 +1,5 @@
 <template>
-    <b-container>
+    <b-container class="mt-3">
         <vue-headful title="식사 관리 - 스마트 헬스케어"/>
         <h2>식사 관리</h2>
         <hr/>

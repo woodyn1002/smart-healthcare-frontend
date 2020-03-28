@@ -1,5 +1,5 @@
 <template>
-    <b-container>
+    <b-container class="mt-3">
         <vue-headful title="스마트 헬스케어"/>
         <h2>
             <b-icon-person-fill></b-icon-person-fill>
