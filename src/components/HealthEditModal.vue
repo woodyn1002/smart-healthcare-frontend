@@ -299,7 +299,11 @@
             },
             initializeForm() {
                 this.form = (this.healthData) ? clone(this.healthData) : defaultFormData();
-                if (this.form.birthdate && this.form.birthdate.date) {
+
+                if (!this.form.birthdate) this.form.birthdate = {};
+                if (!this.form.bloodPressure) this.form.bloodPressure = {};
+
+                if (this.form.birthdate.date) {
                     this.form.birthdate.date = moment(this.healthData.birthdate.date).format(YYYYMMDD);
                 }
 
