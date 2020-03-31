@@ -11,21 +11,21 @@
                     <b-row>
                         <b-col sm="5">
                             <b-card class="mb-3" header="기초대사량">
-                                <b-card-text class="display-4" v-if="healthData.bmr">{{ healthData.bmr }}kcal
+                                <b-card-text class="display-4" v-if="healthData.bmr">{{ prettyBmr }}kcal
                                 </b-card-text>
                                 <b-card-text v-else>성별과 생일, 신장, 체중 정보가 필요합니다.</b-card-text>
                             </b-card>
 
                             <b-card class="mb-3" header="비만도">
                                 <template v-if="healthData.bmi">
-                                    <b-card-text class="display-4">{{ healthData.bmi }}</b-card-text>
+                                    <b-card-text class="display-4">{{ prettyBmi }}</b-card-text>
 
                                     <h6>
                                         현재 체중
                                         <b-badge :variant="bmiStateVariant">{{ bmiStateText }}</b-badge>
                                     </h6>
                                     <b-progress class="mb-2">
-                                        <b-progress-bar :label="String(healthData.bmi)" :value="healthData.bmi - 15"
+                                        <b-progress-bar :label="String(prettyBmi)" :value="healthData.bmi - 15"
                                                         :variant="bmiStateVariant" max="20"></b-progress-bar>
                                     </b-progress>
                                     <h6>정상 체중</h6>
@@ -200,6 +200,12 @@
             ...mapGetters({
                 currentUser: 'auth/currentUser'
             }),
+            prettyBmr() {
+                return Math.floor(this.healthData.bmr);
+            },
+            prettyBmi() {
+                return Math.floor(this.healthData.bmi * 100) / 100;
+            },
             bmiStateText() {
                 let bmiState = this.healthData.bmiState;
                 if (bmiState === this.bmiStates.underweight) return '저체중';

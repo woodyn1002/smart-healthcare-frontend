@@ -24,11 +24,11 @@
                     <b-row>
                         <b-col class="text-center my-auto" v-if="healthData.bmr">
                             <small class="text-muted">기초대사량</small>
-                            <h4>{{ healthData.bmr }}kcal</h4>
+                            <h4>{{ prettyBmr }}kcal</h4>
                         </b-col>
                         <b-col class="text-center my-auto" v-if="healthData.bmi">
                             <small class="text-muted">비만도</small>
-                            <h4>{{ healthData.bmi }}</h4>
+                            <h4>{{ prettyBmi }}</h4>
                             <b-badge :variant="bmiStateVariant">{{ bmiStateText }}</b-badge>
                         </b-col>
                     </b-row>
@@ -128,6 +128,12 @@
             ...mapGetters({
                 currentUser: 'auth/currentUser'
             }),
+            prettyBmr() {
+                return Math.floor(this.healthData.bmr);
+            },
+            prettyBmi() {
+                return Math.floor(this.healthData.bmi * 100) / 100;
+            },
             bmiStateText() {
                 let bmiState = this.healthData.bmiState;
                 if (bmiState === this.bmiStates.underweight) return '저체중';
