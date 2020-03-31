@@ -19,7 +19,8 @@
                         <template v-if="loggedIn">
                             <b-nav-item-dropdown right>
                                 <template v-slot:button-content>
-                                    <b-icon-person-fill></b-icon-person-fill>
+                                    <b-icon-person-fill/>
+                                    <i>{{ currentUser.username }}</i>
                                 </template>
                                 <b-dropdown-item to="/edit-user">정보 변경</b-dropdown-item>
                                 <b-dropdown-item @click="logout()">로그아웃</b-dropdown-item>
