@@ -129,6 +129,13 @@
             },
             hide() {
                 this.$refs['modal'].hide();
+
+                if (this.recognizing.mediaStream) {
+                    let tracks = this.recognizing.mediaStream.getTracks();
+                    tracks.forEach(track => track.stop());
+
+                    this.$refs.video.srcObject = null;
+                }
             },
             startExercise() {
                 this.recognizing.state = this.states.recognizing;
