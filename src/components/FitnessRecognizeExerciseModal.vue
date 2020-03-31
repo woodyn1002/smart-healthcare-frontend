@@ -118,6 +118,7 @@
 
                         this.$refs.video.srcObject = mediaStream;
                         this.$refs.video.play();
+                        this.$refs.video.classList.remove('d-none');
 
                         this.recognizing.state = this.states.ready;
                     })
