@@ -204,7 +204,7 @@
             }
         },
         created() {
-            HealthDataService.getHealthData(this.currentUser.username)
+            HealthDataService.getHealthData(this.currentUser.id)
                 .then(healthData => this.healthData = healthData)
                 .catch(err => {
                     if (err.name !== 'HealthDataNotFoundError') {
@@ -213,12 +213,12 @@
                 })
                 .then(() => this.loadedHealthData = true);
 
-            MealService.getMeals(this.currentUser.username, {limit: 3, sortByDatesDesc: true})
+            MealService.getMeals(this.currentUser.id, {limit: 3, sortByDatesDesc: true})
                 .then(meals => this.meals = meals)
                 .catch(err => this.handleError(err))
                 .then(() => this.loadedMeals = true);
 
-            FitnessService.getFitnessList(this.currentUser.username, {limit: 3, sortByDatesDesc: true})
+            FitnessService.getFitnessList(this.currentUser.id, {limit: 3, sortByDatesDesc: true})
                 .then(fitnessList => this.fitnessList = fitnessList)
                 .catch(err => this.handleError(err))
                 .then(() => this.loadedFitness = true);

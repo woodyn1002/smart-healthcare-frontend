@@ -319,7 +319,7 @@
                         if (passed) {
                             let body = this.form;
 
-                            HealthDataService.createOrUpdateHealthData(this.currentUser.username, body)
+                            HealthDataService.createOrUpdateHealthData(this.currentUser.id, body)
                                 .then(healthData => {
                                     this.healthData = healthData;
                                     this.$emit('updated', healthData);
@@ -337,7 +337,7 @@
             }
         },
         created() {
-            HealthDataService.getHealthData(this.currentUser.username)
+            HealthDataService.getHealthData(this.currentUser.id)
                 .then(healthData => {
                     this.healthData = healthData;
                     this.initializeForm();

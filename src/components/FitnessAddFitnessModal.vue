@@ -41,7 +41,7 @@
                 this.$refs['fitness-form'].ok();
             },
             addFitness(date, body) {
-                FitnessService.createFitness(this.currentUser.username, date, body)
+                FitnessService.createFitness(this.currentUser.id, date, body)
                     .then(() => {
                         this.$emit('created');
                         this.hide();

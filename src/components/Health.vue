@@ -237,7 +237,7 @@
             }
         },
         created() {
-            HealthDataService.getHealthData(this.currentUser.username)
+            HealthDataService.getHealthData(this.currentUser.id)
                 .then(healthData => this.healthData = healthData)
                 .catch(err => {
                     if (err.name !== 'HealthDataNotFoundError') {

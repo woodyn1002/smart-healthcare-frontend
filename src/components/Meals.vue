@@ -105,7 +105,7 @@
                 this.loadedMeals = false;
 
                 let params = {date: this.selectedDate, sortByDates: true};
-                MealService.getMeals(this.currentUser.username, params)
+                MealService.getMeals(this.currentUser.id, params)
                     .then(meals => this.meals = meals)
                     .catch(err => this.handleError(err))
                     .then(() => this.loadedMeals = true);
@@ -141,7 +141,7 @@
                 })
                     .then(value => {
                         if (value) {
-                            MealService.deleteMeal(this.currentUser.username, item.date)
+                            MealService.deleteMeal(this.currentUser.id, item.date)
                                 .then(() => this.loadMeals())
                                 .catch(err => this.handleError(err));
                         }

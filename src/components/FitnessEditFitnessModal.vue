@@ -41,7 +41,7 @@
                 this.$refs['fitness-form'].ok();
             },
             editFitness(date, body) {
-                FitnessService.updateFitness(this.currentUser.username, date, body)
+                FitnessService.updateFitness(this.currentUser.id, date, body)
                     .then(() => {
                         this.$emit('updated');
                         this.hide();

@@ -5,12 +5,12 @@ export function getUsers() {
     return apiClient.request('get', '/users');
 }
 
-export function getUser(username) {
-    return apiClient.request('get', `/users/${username}`);
+export function getUser(userId) {
+    return apiClient.request('get', `/users/${userId}`);
 }
 
-export function updateUser(username, body) {
-    return apiClient.request('put', `/users/${username}`, {body})
+export function updateUser(userId, body) {
+    return apiClient.request('put', `/users/${userId}`, {body})
         .then(user => {
             const oldUser = JSON.parse(localStorage.getItem('user'));
             user.token = oldUser.token;
@@ -21,6 +21,6 @@ export function updateUser(username, body) {
         });
 }
 
-export function deleteUser(username) {
-    return apiClient.request('delete', `/users/${username}`);
+export function deleteUser(userId) {
+    return apiClient.request('delete', `/users/${userId}`);
 }

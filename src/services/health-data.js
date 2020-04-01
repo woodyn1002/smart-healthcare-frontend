@@ -6,19 +6,19 @@ function resolveEmptyObjects(healthData) {
     return healthData;
 }
 
-export function getHealthData(username) {
-    return apiClient.request('get', `/users/${username}/health-data`)
+export function getHealthData(userId) {
+    return apiClient.request('get', `/users/${userId}/health-data`)
         .then(healthData => resolveEmptyObjects(healthData));
 }
 
-export function createOrUpdateHealthData(username, body) {
-    return apiClient.request('get', `/users/${username}/health-data`)
+export function createOrUpdateHealthData(userId, body) {
+    return apiClient.request('get', `/users/${userId}/health-data`)
         .then(() => {
-            return apiClient.request('put', `/users/${username}/health-data`, {body});
+            return apiClient.request('put', `/users/${userId}/health-data`, {body});
         })
         .catch(err => {
             if (err.name === 'HealthDataNotFoundError') {
-                return apiClient.request('post', `/users/${username}/health-data`, {body});
+                return apiClient.request('post', `/users/${userId}/health-data`, {body});
             } else {
                 throw err;
             }
@@ -26,6 +26,6 @@ export function createOrUpdateHealthData(username, body) {
         .then(healthData => resolveEmptyObjects(healthData));
 }
 
-export function deleteHealthData(username) {
-    return apiClient.request('delete', `/users/${username}/health-data`);
+export function deleteHealthData(userId) {
+    return apiClient.request('delete', `/users/${userId}/health-data`);
 }

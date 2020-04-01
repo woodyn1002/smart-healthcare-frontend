@@ -41,7 +41,7 @@
                 this.$refs['meal-form'].ok();
             },
             addMeal(date, body) {
-                MealService.createMeal(this.currentUser.username, date, body)
+                MealService.createMeal(this.currentUser.id, date, body)
                     .then(() => {
                         this.$emit('created');
                         this.hide();

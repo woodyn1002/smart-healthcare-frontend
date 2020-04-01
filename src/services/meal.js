@@ -9,8 +9,8 @@ function resolveInvalidFoods(meal) {
     return meal;
 }
 
-export function getMeals(username, params) {
-    return apiClient.request('get', `/users/${username}/meals`, {params})
+export function getMeals(userId, params) {
+    return apiClient.request('get', `/users/${userId}/meals`, {params})
         .then(meals => {
             for (let meal of meals) {
                 resolveInvalidFoods(meal);
@@ -19,21 +19,21 @@ export function getMeals(username, params) {
         });
 }
 
-export function getMeal(username, date) {
-    return apiClient.request('get', `/users/${username}/meals/${date}`)
+export function getMeal(userId, date) {
+    return apiClient.request('get', `/users/${userId}/meals/${date}`)
         .then(meal => resolveInvalidFoods(meal));
 }
 
-export function createMeal(username, date, body) {
-    return apiClient.request('post', `/users/${username}/meals/${date}`, {body})
+export function createMeal(userId, date, body) {
+    return apiClient.request('post', `/users/${userId}/meals/${date}`, {body})
         .then(meal => resolveInvalidFoods(meal));
 }
 
-export function updateMeal(username, date, body) {
-    return apiClient.request('put', `/users/${username}/meals/${date}`, {body})
+export function updateMeal(userId, date, body) {
+    return apiClient.request('put', `/users/${userId}/meals/${date}`, {body})
         .then(meal => resolveInvalidFoods(meal));
 }
 
-export function deleteMeal(username, date) {
-    return apiClient.request('delete', `/users/${username}/meals/${date}`);
+export function deleteMeal(userId, date) {
+    return apiClient.request('delete', `/users/${userId}/meals/${date}`);
 }

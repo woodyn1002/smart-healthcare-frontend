@@ -105,7 +105,7 @@
                 this.loadedFitness = false;
 
                 let params = {date: this.selectedDate, sortByDates: true};
-                FitnessService.getFitnessList(this.currentUser.username, params)
+                FitnessService.getFitnessList(this.currentUser.id, params)
                     .then(fitnessList => this.fitnessList = fitnessList)
                     .catch(err => this.handleError(err))
                     .then(() => this.loadedFitness = true);
@@ -137,7 +137,7 @@
                 })
                     .then(value => {
                         if (value) {
-                            FitnessService.deleteFitness(this.currentUser.username, item.date)
+                            FitnessService.deleteFitness(this.currentUser.id, item.date)
                                 .then(() => this.loadFitnessList())
                                 .catch(err => this.handleError(err));
                         }

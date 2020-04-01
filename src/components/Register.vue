@@ -159,6 +159,7 @@
                         if (passed) {
                             let body = {
                                 username: this.form.username,
+                                sns: null,
                                 password: this.form.password,
                                 email: this.form.email,
                                 fullName: this.form.fullName

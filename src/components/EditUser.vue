@@ -117,7 +117,7 @@
                             if (this.form.password !== '') body.password = this.form.password;
                             if (this.form.fullName !== '') body.fullName = this.form.fullName;
 
-                            UserService.updateUser(this.currentUser.username, body)
+                            UserService.updateUser(this.currentUser.id, body)
                                 .then(() => this.$router.push('/dashboard'))
                                 .catch(err => this.handleError(err));
                         }
@@ -126,7 +126,7 @@
             handleUnregister(event) {
                 event.preventDefault();
 
-                UserService.deleteUser(this.currentUser.username)
+                UserService.deleteUser(this.currentUser.id)
                     .then(() => this.$router.push('/'))
                     .catch(err => this.handleError(err));
             },
