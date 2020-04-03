@@ -3,48 +3,50 @@
         <vue-headful title="정보 변경 - 스마트 헬스케어"/>
         <b-card class="mx-auto" style="max-width: 40rem;" title="사용자 정보 변경">
             <ValidationObserver ref="form-validation">
-                <b-form @submit="handleRegister">
-                    <b-form-group
-                            description="6자 이상, 20자 이하"
-                            label="새 비밀번호:"
-                            label-for="password-input"
-                    >
-                        <ValidationProvider name="새 비밀번호" rules="min:6|max:20" v-slot="{errors}"
-                                            vid="password">
-                            <b-form-input
-                                    aria-describedby="password-feedback"
-                                    id="password-input"
-                                    placeholder="Enter password"
-                                    trim
-                                    type="password"
-                                    v-model="form.password"
-                            ></b-form-input>
-                            <b-form-invalid-feedback id="password-feedback">
-                                {{ errors[0] }}
-                            </b-form-invalid-feedback>
-                        </ValidationProvider>
-                    </b-form-group>
+                <b-form @submit="handleSubmit">
+                    <template v-if="currentUser.sns === null">
+                        <b-form-group
+                                description="6자 이상, 20자 이하"
+                                label="새 비밀번호:"
+                                label-for="password-input"
+                        >
+                            <ValidationProvider name="새 비밀번호" rules="min:6|max:20" v-slot="{errors}"
+                                                vid="password">
+                                <b-form-input
+                                        aria-describedby="password-feedback"
+                                        id="password-input"
+                                        placeholder="Enter password"
+                                        trim
+                                        type="password"
+                                        v-model="form.password"
+                                ></b-form-input>
+                                <b-form-invalid-feedback id="password-feedback">
+                                    {{ errors[0] }}
+                                </b-form-invalid-feedback>
+                            </ValidationProvider>
+                        </b-form-group>
 
-                    <b-form-group
-                            description="위와 동일한 비밀번호를 입력"
-                            label="새 비밀번호 확인:"
-                            label-for="password-confirm-input"
-                    >
-                        <ValidationProvider name="새 비밀번호 확인" rules="confirmed:password" v-slot="{errors}">
-                            <b-form-input
-                                    :state="(errors[0]) ? false : null"
-                                    aria-describedby="password-confirm-feedback"
-                                    id="password-confirm-input"
-                                    placeholder="Enter password"
-                                    trim
-                                    type="password"
-                                    v-model="form.passwordConfirm"
-                            ></b-form-input>
-                            <b-form-invalid-feedback id="password-confirm-feedback">
-                                {{ errors[0] }}
-                            </b-form-invalid-feedback>
-                        </ValidationProvider>
-                    </b-form-group>
+                        <b-form-group
+                                description="위와 동일한 비밀번호를 입력"
+                                label="새 비밀번호 확인:"
+                                label-for="password-confirm-input"
+                        >
+                            <ValidationProvider name="새 비밀번호 확인" rules="confirmed:password" v-slot="{errors}">
+                                <b-form-input
+                                        :state="(errors[0]) ? false : null"
+                                        aria-describedby="password-confirm-feedback"
+                                        id="password-confirm-input"
+                                        placeholder="Enter password"
+                                        trim
+                                        type="password"
+                                        v-model="form.passwordConfirm"
+                                ></b-form-input>
+                                <b-form-invalid-feedback id="password-confirm-feedback">
+                                    {{ errors[0] }}
+                                </b-form-invalid-feedback>
+                            </ValidationProvider>
+                        </b-form-group>
+                    </template>
 
                     <b-form-group
                             label="실명:"
@@ -106,7 +108,7 @@
             }),
         },
         methods: {
-            handleRegister(event) {
+            handleSubmit(event) {
                 event.preventDefault();
 
                 this.$refs['form-validation'].validate()

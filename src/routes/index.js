@@ -4,6 +4,7 @@ import store from "../stores";
 import Home from "../components/Home";
 import Register from "../components/Register";
 import Login from "../components/Login";
+import LoginWithNaverCallback from "@/components/LoginWithNaverCallback";
 import Dashboard from "../components/Dashboard";
 import Health from "../components/Health";
 import Meals from "../components/Meals";
@@ -33,6 +34,10 @@ export default new Router({
         {
             path: '/login',
             component: Login
+        },
+        {
+            path: '/login/naver',
+            component: LoginWithNaverCallback
         },
         {
             path: '/edit-user',

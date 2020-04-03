@@ -44,6 +44,11 @@
                     <b-button to="/register" variant="light">회원 가입</b-button>
                 </b-form>
             </ValidationObserver>
+
+            <div class="mt-4">
+                <p class="text-muted text-center">혹은</p>
+                <oauth-login-buttons/>
+            </div>
         </b-card>
     </b-container>
 </template>
@@ -53,6 +58,7 @@
     import {extend, localize, ValidationObserver, ValidationProvider} from "vee-validate";
     import {required} from "vee-validate/dist/rules";
     import ErrorAlerts from "@/components/ErrorAlerts";
+    import OauthLoginButtons from "@/components/OAuthLoginButtons";
 
     localize('ko');
 
@@ -60,7 +66,7 @@
 
     export default {
         name: "login",
-        components: {ErrorAlerts, ValidationObserver, ValidationProvider},
+        components: {OauthLoginButtons, ErrorAlerts, ValidationObserver, ValidationProvider},
         data() {
             return {
                 form: {
