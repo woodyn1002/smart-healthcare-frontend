@@ -36,7 +36,7 @@ export function request(method, path, options) {
     return axios(config)
         .then(response => Promise.resolve(response.data))
         .catch(err => {
-            if (err.response) {
+            if (err.response && err.response.data.error) {
                 return Promise.reject(err.response.data.error);
             } else {
                 console.error(err);
