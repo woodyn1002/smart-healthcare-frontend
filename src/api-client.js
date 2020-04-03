@@ -3,7 +3,7 @@ import store from "./stores";
 import router from "./routes";
 import {authHeader} from "@/services/auth";
 
-const API_URL = 'http://localhost:3000/v1';
+const API_URL = process.env.VUE_APP_BACKEND_URL;
 
 axios.interceptors.response.use(
     response => {
