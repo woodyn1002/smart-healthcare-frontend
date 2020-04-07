@@ -10,7 +10,7 @@ deploy:
   provider: s3
   access_key_id: "$AWS_ACCESS_KEY_ID"
   secret_access_key: "$AWS_SECRET_ACCESS_KEY"
-  bucket: "smart-healthcare-frontend"
+  bucket: "smart-healthcare.elsiff.me"
   region: "ap-northeast-2"
   skip_cleanup: true
   local_dir: dist
