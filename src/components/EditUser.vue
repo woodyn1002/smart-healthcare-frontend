@@ -4,7 +4,7 @@
         <b-card class="mx-auto" style="max-width: 40rem;" title="사용자 정보 변경">
             <ValidationObserver ref="form-validation">
                 <b-form @submit="handleSubmit">
-                    <template v-if="currentUser.sns === null">
+                    <template v-if="currentUser && currentUser.sns === null">
                         <b-form-group
                                 description="6자 이상, 20자 이하"
                                 label="새 비밀번호:"
@@ -82,7 +82,7 @@
     import {confirmed, max, min} from "vee-validate/dist/rules";
     import ErrorAlerts from "@/components/ErrorAlerts";
     import * as UserService from "../services/user";
-    import {mapGetters} from "vuex";
+    import {mapActions, mapGetters} from "vuex";
 
     localize('ko');
 
@@ -108,6 +108,9 @@
             }),
         },
         methods: {
+            ...mapActions({
+                logout: 'auth/logout'
+            }),
             handleSubmit(event) {
                 event.preventDefault();
 
@@ -129,6 +132,7 @@
                 event.preventDefault();
 
                 UserService.deleteUser(this.currentUser.id)
+                    .then(() => this.logout())
                     .then(() => this.$router.push('/'))
                     .catch(err => this.handleError(err));
             },
