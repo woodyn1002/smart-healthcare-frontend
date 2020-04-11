@@ -40,9 +40,8 @@
             const authCode = this.$route.query.code;
 
             this.loginWithNaver({code: authCode, state: this.csrfToken})
-                .then(() => {
-                    this.$router.push('/dashboard');
-                })
+                .then(() => this.$router.push('/dashboard'))
+                .then(() => window.location.reload())
                 .catch(err => this.handleError(err));
         }
     }
