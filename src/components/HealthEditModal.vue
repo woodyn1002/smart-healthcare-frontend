@@ -343,11 +343,7 @@
                     this.healthData = healthData;
                     this.initializeForm();
                 })
-                .catch(err => {
-                    if (err.name !== 'HealthDataNotFoundError') {
-                        this.handleError(err);
-                    }
-                });
+                .catch(err => this.handleError(err));
         }
     }
 </script>

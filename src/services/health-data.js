@@ -18,10 +18,13 @@ export function getLatestHealthData(userId) {
     let params = {limit: 1, sortByDatesDesc: true}
     return apiClient.request('get', `/users/${userId}/health-data`, {params})
         .then(healthDataList => {
-            if (healthDataList.length === 0) {
-                return {};
-            }
-            return resolveEmptyObjects(healthDataList[0]);
+            let healthData;
+            if (healthDataList.length === 0)
+                healthData = {};
+            else
+                healthData = healthDataList[0];
+
+            return resolveEmptyObjects(healthData);
         });
 }
 
