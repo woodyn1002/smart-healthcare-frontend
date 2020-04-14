@@ -105,9 +105,8 @@
             <b-card-text>
             </b-card-text>
         </b-card>
-        <b-card header="대사 일지">
-            <b-card-text>
-            </b-card-text>
+        <b-card class="mb-3" header="대사 일지" style="height: 450px;">
+            <dashboard-health-summary @error="handleError"/>
         </b-card>
         <error-alerts ref="error-alerts"/>
     </b-container>
@@ -120,10 +119,11 @@
     import * as MealService from "../services/meal";
     import * as FitnessService from "../services/fitness";
     import ErrorAlerts from "@/components/ErrorAlerts";
+    import DashboardHealthSummary from "@/components/DashboardHealthSummary";
 
     export default {
         name: "dashboard",
-        components: {ErrorAlerts},
+        components: {DashboardHealthSummary, ErrorAlerts},
         computed: {
             ...mapGetters({
                 currentUser: 'auth/currentUser'
