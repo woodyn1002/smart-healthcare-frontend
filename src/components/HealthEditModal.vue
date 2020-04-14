@@ -317,9 +317,10 @@
                 this.$refs['form-validation'].validate()
                     .then(passed => {
                         if (passed) {
+                            let date = moment().toISOString();
                             let body = this.form;
 
-                            HealthDataService.createOrUpdateHealthData(this.currentUser.id, body)
+                            HealthDataService.createHealthData(this.currentUser.id, date, body)
                                 .then(healthData => {
                                     this.healthData = healthData;
                                     this.$emit('updated', healthData);
@@ -337,7 +338,7 @@
             }
         },
         created() {
-            HealthDataService.getHealthData(this.currentUser.id)
+            HealthDataService.getLatestHealthData(this.currentUser.id)
                 .then(healthData => {
                     this.healthData = healthData;
                     this.initializeForm();

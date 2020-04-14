@@ -237,13 +237,9 @@
             }
         },
         created() {
-            HealthDataService.getHealthData(this.currentUser.id)
+            HealthDataService.getLatestHealthData(this.currentUser.id)
                 .then(healthData => this.healthData = healthData)
-                .catch(err => {
-                    if (err.name !== 'HealthDataNotFoundError') {
-                        this.handleError(err);
-                    }
-                })
+                .catch(err => this.handleError(err))
                 .then(() => this.loadedHealthData = true);
 
             if (this.$route.query.edit) {

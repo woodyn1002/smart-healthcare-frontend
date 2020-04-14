@@ -6,26 +6,40 @@ function resolveEmptyObjects(healthData) {
     return healthData;
 }
 
-export function getHealthData(userId) {
-    return apiClient.request('get', `/users/${userId}/health-data`)
-        .then(healthData => resolveEmptyObjects(healthData));
+export function getHealthDataList(userId, params) {
+    return apiClient.request('get', `/users/${userId}/health-data`, {params})
+        .then(healthDataList => {
+            healthDataList.forEach(healthData => resolveEmptyObjects(healthData));
+            return healthDataList;
+        });
 }
 
-export function createOrUpdateHealthData(userId, body) {
-    return apiClient.request('get', `/users/${userId}/health-data`)
-        .then(() => {
-            return apiClient.request('put', `/users/${userId}/health-data`, {body});
-        })
-        .catch(err => {
-            if (err.name === 'HealthDataNotFoundError') {
-                return apiClient.request('post', `/users/${userId}/health-data`, {body});
-            } else {
-                throw err;
+export function getLatestHealthData(userId) {
+    let params = {limit: 1, sortByDatesDesc: true}
+    return apiClient.request('get', `/users/${userId}/health-data`, {params})
+        .then(healthDataList => {
+            if (healthDataList.length === 0) {
+                return {};
             }
-        })
+            return resolveEmptyObjects(healthDataList[0]);
+        });
+}
+
+export function getHealthData(userId, date) {
+    return apiClient.request('get', `/users/${userId}/health-data/${date}`)
         .then(healthData => resolveEmptyObjects(healthData));
 }
 
-export function deleteHealthData(userId) {
-    return apiClient.request('delete', `/users/${userId}/health-data`);
+export function createHealthData(userId, date, body) {
+    return apiClient.request('post', `/users/${userId}/health-data/${date}`, {body})
+        .then(healthData => resolveEmptyObjects(healthData));
+}
+
+export function updateHealthData(userId, date, body) {
+    return apiClient.request('put', `/users/${userId}/health-data/${date}`, {body})
+        .then(healthData => resolveEmptyObjects(healthData));
+}
+
+export function deleteHealthData(userId, date) {
+    return apiClient.request('delete', `/users/${userId}/health-data/${date}`);
 }
