@@ -223,11 +223,5 @@
 </script>
 
 <style scoped>
-    .fade-enter-active {
-        transition: opacity .5s;
-    }
 
-    .fade-enter {
-        opacity: 0;
-    }
 </style>

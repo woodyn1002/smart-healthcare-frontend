@@ -79,4 +79,12 @@
     ::-webkit-scrollbar-thumb:hover {
         background: #555;
     }
+
+    .fade-enter-active {
+        transition: opacity .5s;
+    }
+
+    .fade-enter {
+        opacity: 0;
+    }
 </style>
