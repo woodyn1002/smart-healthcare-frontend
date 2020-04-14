@@ -120,6 +120,13 @@
                         } else if (moment([this.year, this.month, 1]).isAfter(current)) {
                             this.healthSummary = [];
                         }
+
+                        this.healthSummary.forEach(it => {
+                            it.bmr = Math.floor(it.bmr);
+                            it.mealCalories = Math.floor(it.mealCalories);
+                            it.fitnessCalories = Math.floor(it.fitnessCalories);
+                            it.sumOfCalories = Math.floor(it.sumOfCalories);
+                        });
                     })
                     .catch(err => this.handleError(err))
                     .then(() => this.loadedHealthSummary = true);
