@@ -27,7 +27,7 @@
 
                 <transition name="fade">
                     <b-col v-if="loadedMeals">
-                        <b-table :fields="mealsTableFields" :items="meals" hover striped>
+                        <b-table :fields="mealsTableFields" :items="meals" hover show-empty striped>
                             <template v-slot:cell(date)="data">
                                 {{ formatDate(data.value) }}
                             </template>
@@ -44,6 +44,9 @@
                                 <b-button @click="deleteMeal(data.item)" class="m-1" size="sm">
                                     <b-icon-trash></b-icon-trash>
                                 </b-button>
+                            </template>
+                            <template v-slot:empty>
+                                <p class="text-muted text-center">데이터가 없습니다.</p>
                             </template>
                         </b-table>
                     </b-col>
