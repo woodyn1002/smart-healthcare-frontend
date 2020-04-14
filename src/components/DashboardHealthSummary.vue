@@ -61,7 +61,16 @@
                 ],
                 chartOptions: {
                     responsive: true,
-                    maintainAspectRatio: false
+                    maintainAspectRatio: false,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                min: 0,
+                                suggestedMax: 2500,
+                                stepSize: 500
+                            }
+                        }]
+                    }
                 }
             }
         },
