@@ -101,11 +101,7 @@
                 </template>
             </transition>
         </b-card-group>
-        <b-card class="mb-3" header="일별 차트">
-            <b-card-text>
-            </b-card-text>
-        </b-card>
-        <b-card class="mb-3" header="대사 일지" style="height: 450px;">
+        <b-card class="mb-3" header="일별 차트와 대사 일지" style="height: 750px;">
             <dashboard-health-summary @error="handleError"/>
         </b-card>
         <error-alerts ref="error-alerts"/>

@@ -15,6 +15,8 @@
                 </b-button-group>
             </b-button-toolbar>
         </b-container>
+        <bar-chart :chart-data="chartData" :options="chartOptions"
+                   class="mb-4" style="height: 300px; position: relative;"/>
         <transition name="fade">
             <b-table :fields="healthSummaryTableFields" :items="healthSummary" head-variant="light"
                      show-empty sticky-header v-if="loadedHealthSummary">
@@ -40,27 +42,61 @@
     import moment from "moment";
     import {mapGetters} from "vuex";
     import * as HealthSummaryService from "../services/health-summary";
+    import BarChart from "@/components/BarChart";
 
     export default {
         name: "health-summary",
+        components: {BarChart},
         data() {
             return {
                 loadedHealthSummary: false,
                 year: moment().year(),
                 month: moment().month(),
+                healthSummary: [],
                 healthSummaryTableFields: [
                     {'key': 'day', 'label': '날짜'},
                     {'key': 'mealCalories', 'label': '섭취 열량'},
                     {'key': 'burntCalories', 'label': '소모 열량'},
                     {'key': 'sumOfCalories', 'label': '계'}
                 ],
-                healthSummary: []
+                chartOptions: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
             }
         },
         computed: {
             ...mapGetters({
                 currentUser: 'auth/currentUser'
             }),
+            chartData() {
+                let mealCaloriesDataset = {label: '섭취 열량', backgroundColor: '#d9534f', data: []};
+                let burntCaloriesDataset = {label: '소모 열량', backgroundColor: '#5cb85c', data: []};
+                let sumOfCaloriesDataset = {label: '총 열량', backgroundColor: '#0275d8', data: []};
+
+                for (let dateSummary of this.healthSummary) {
+                    mealCaloriesDataset.data.push(dateSummary.mealCalories);
+                    burntCaloriesDataset.data.push(dateSummary.bmr + dateSummary.fitnessCalories);
+                    sumOfCaloriesDataset.data.push(dateSummary.sumOfCalories);
+                }
+
+                let labels = [];
+                let maxDate;
+
+                let current = moment();
+                if (this.year === current.year() && this.month === current.month())
+                    maxDate = current.date();
+                else
+                    maxDate = moment().year(this.year).month(this.month).endOf('month').date();
+
+                for (let date = 1; date <= maxDate; date++)
+                    labels.push(date);
+
+                return {
+                    labels,
+                    datasets: [mealCaloriesDataset, burntCaloriesDataset, sumOfCaloriesDataset]
+                }
+            }
         },
         methods: {
             loadData() {
