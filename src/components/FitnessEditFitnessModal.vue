@@ -23,6 +23,11 @@
     export default {
         name: "fitness-edit-fitness-modal",
         components: {ErrorAlerts, FitnessForm},
+        data() {
+            return {
+                origin: undefined
+            }
+        },
         computed: {
             ...mapGetters({
                 currentUser: 'auth/currentUser'
@@ -30,6 +35,7 @@
         },
         methods: {
             show(date, fitness) {
+                this.origin = fitness;
                 this.$refs['modal'].show();
                 this.$refs['fitness-form'].initializeForm(date, fitness);
             },
@@ -41,7 +47,10 @@
                 this.$refs['fitness-form'].ok();
             },
             editFitness(date, body) {
-                FitnessService.updateFitness(this.currentUser.id, date, body)
+                if (date !== this.origin.date) {
+                    body.date = date;
+                }
+                FitnessService.updateFitness(this.currentUser.id, this.origin.date, body)
                     .then(() => {
                         this.$emit('updated');
                         this.hide();

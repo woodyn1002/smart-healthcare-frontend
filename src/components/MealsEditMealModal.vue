@@ -23,6 +23,11 @@
     export default {
         name: "meals-edit-meal-modal",
         components: {ErrorAlerts, MealForm},
+        data() {
+            return {
+                origin: undefined
+            }
+        },
         computed: {
             ...mapGetters({
                 currentUser: 'auth/currentUser'
@@ -30,6 +35,7 @@
         },
         methods: {
             show(date, meal) {
+                this.origin = meal;
                 this.$refs['modal'].show();
                 this.$refs['meal-form'].initializeForm(date, meal);
             },
@@ -41,7 +47,10 @@
                 this.$refs['meal-form'].ok();
             },
             editMeal(date, body) {
-                MealService.updateMeal(this.currentUser.id, date, body)
+                if (date !== this.origin.date) {
+                    body.date = date;
+                }
+                MealService.updateMeal(this.currentUser.id, this.origin.date, body)
                     .then(() => {
                         this.$emit('updated');
                         this.hide();
