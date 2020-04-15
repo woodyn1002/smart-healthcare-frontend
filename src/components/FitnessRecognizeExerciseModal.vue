@@ -1,5 +1,5 @@
 <template>
-    <b-modal ref="modal" title="">
+    <b-modal @hide="handleHide" ref="modal" title="">
         <div class="camera-view d-flex justify-content-center">
             <b-spinner
                     class="mb-3"
@@ -129,12 +129,14 @@
             },
             hide() {
                 this.$refs['modal'].hide();
-
+            },
+            handleHide() {
                 if (this.recognizing.mediaStream) {
                     let tracks = this.recognizing.mediaStream.getTracks();
                     tracks.forEach(track => track.stop());
 
                     this.$refs.video.srcObject = null;
+                    this.recognizing.mediaStream = null;
                 }
             },
             startExercise() {
