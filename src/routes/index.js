@@ -6,6 +6,7 @@ import Register from "../components/Register";
 import Login from "../components/Login";
 import LoginWithNaverCallback from "@/components/LoginWithNaverCallback";
 import LoginWithFacebookCallback from "@/components/LoginWithFacebookCallback";
+import LoginWithGoogleCallback from "@/components/LoginWithGoogleCallback";
 import Dashboard from "../components/Dashboard";
 import Health from "../components/Health";
 import Meals from "../components/Meals";
@@ -43,6 +44,10 @@ export default new Router({
         {
             path: '/login/facebook',
             component: LoginWithFacebookCallback
+        },
+        {
+            path: '/login/google',
+            component: LoginWithGoogleCallback
         },
         {
             path: '/edit-user',
