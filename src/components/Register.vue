@@ -155,7 +155,8 @@
         },
         methods: {
             ...mapActions({
-                register: 'auth/register'
+                register: 'auth/register',
+                login: 'auth/login'
             }),
             handleRegister(event) {
                 event.preventDefault();
@@ -172,7 +173,8 @@
                             };
                             this.register(body).then(
                                 () => {
-                                    this.$router.push('/');
+                                    this.login({username: body.username, password: body.password})
+                                        .then(() => this.$router.push('/'));
                                 },
                                 error => {
                                     if (error.name === 'UsernameExistError')
