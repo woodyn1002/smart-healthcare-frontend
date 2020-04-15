@@ -35,6 +35,11 @@ export function loginWithNaver(body) {
         .then(user => saveAndReturnUser(user));
 }
 
+export function loginWithFacebook(body) {
+    return apiClient.request('post', '/auth/facebook', {body})
+        .then(user => saveAndReturnUser(user));
+}
+
 export function logout() {
     localStorage.removeItem('user');
 }
