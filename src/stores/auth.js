@@ -64,6 +64,18 @@ export const auth = {
                 }
             );
         },
+        loginWithFacebook({commit}, body) {
+            return AuthService.loginWithFacebook(body).then(
+                user => {
+                    commit('loginSuccess', user);
+                    return Promise.resolve(user);
+                },
+                error => {
+                    commit('loginFailure');
+                    return Promise.reject(error);
+                }
+            );
+        },
         logout({commit}) {
             AuthService.logout();
             commit('logout');
