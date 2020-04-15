@@ -1,5 +1,5 @@
 <template>
-    <b-modal @hide="handleHide" ref="modal" title="">
+    <b-modal @hide="handleHide" ref="modal" title="운동 인식">
         <div class="camera-view d-flex justify-content-center">
             <b-spinner
                     class="mb-3"
