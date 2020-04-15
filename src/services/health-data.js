@@ -1,7 +1,7 @@
 import * as apiClient from "@/api-client";
 
 function resolveEmptyObjects(healthData) {
-    if (!healthData.date) healthData.date = {};
+    if (!healthData.birthdate) healthData.birthdate = {};
     if (!healthData.bloodPressure) healthData.bloodPressure = {};
     return healthData;
 }
