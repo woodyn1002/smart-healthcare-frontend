@@ -40,6 +40,11 @@ export function loginWithFacebook(body) {
         .then(user => saveAndReturnUser(user));
 }
 
+export function loginWithGoogle(body) {
+    return apiClient.request('post', '/auth/google', {body})
+        .then(user => saveAndReturnUser(user));
+}
+
 export function logout() {
     localStorage.removeItem('user');
 }

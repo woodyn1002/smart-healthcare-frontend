@@ -12,6 +12,12 @@
                 Facebook 아이디로 로그인
             </p>
         </div>
+        <div @click="loginWithGoogle()" class="lbtn lbtn-flat lbtn-google align-self-center mx-auto">
+            <i class="logo"></i>
+            <p class="label">
+                Google 아이디로 로그인
+            </p>
+        </div>
     </div>
 </template>
 
@@ -25,6 +31,10 @@
     const facebook = {
         appId: process.env.VUE_APP_FACEBOOK_API_APP_ID,
         redirectUri: process.env.VUE_APP_FACEBOOK_API_REDIRECT_URI
+    };
+    const google = {
+        clientId: process.env.VUE_APP_GOOGLE_API_CLIENT_ID,
+        redirectUri: process.env.VUE_APP_GOOGLE_API_REDIRECT_URI
     };
 
     export default {
@@ -50,6 +60,17 @@
                                                '&redirect_uri=' + facebook.redirectUri +
                                                '&state=' + csrfToken +
                                                '&scope=email';
+                    });
+            },
+            loginWithGoogle() {
+                this.makeCsrfToken()
+                    .then(csrfToken => {
+                        window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?response_type=code' +
+                                               '&access_type=offline' +
+                                               '&client_id=' + google.clientId +
+                                               '&redirect_uri=' + google.redirectUri +
+                                               '&state=' + csrfToken +
+                                               '&scope=profile email';
                     });
             }
         }
