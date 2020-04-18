@@ -3,7 +3,7 @@
         <b-form @submit.stop.prevent="ok()">
             <b-form-group label="운동 종목" label-for="exercise-name-input">
                 <ValidationProvider
-                        :rules="`oneOf:${exerciseOptions.join(',')}|required`"
+                        rules="required"
                         name="운동"
                         v-slot="{passed, errors}"
                 >
@@ -15,6 +15,7 @@
                             placeholder="운동을 입력해주세요"
                             type="search"
                             v-model="form.exerciseName"
+                            @change="updateBurntCalories"
                     ></b-form-input>
                     <b-form-invalid-feedback id="exercise-name-feedback">
                         {{ errors[0] }}
@@ -55,6 +56,7 @@
                                 id="start-time-input"
                                 show-seconds
                                 v-model="form.startTime"
+                                @input="updateBurntCalories"
                         ></b-form-timepicker>
                     </b-form-group>
                 </b-col>
@@ -65,12 +67,32 @@
                                 id="finish-time-input"
                                 show-seconds
                                 v-model="form.finishTime"
+                                @input="updateBurntCalories"
                         ></b-form-timepicker>
                     </b-form-group>
                 </b-col>
             </b-row>
 
-            <p class="text-muted">소모 열량: {{ burntCalories }}kcal</p>
+            <b-form-group label="소모 열량 (kcal)" label-for="burnt-calories-input">
+                <ValidationProvider
+                        name="소모 열량"
+                        rules="min_value:0|required"
+                        v-slot="{passed, errors}"
+                >
+                    <b-form-input
+                            :disabled="!form.burntCaloriesEditable"
+                            :state="(errors[0]) ? false : ((passed) ? true : null)"
+                            aria-describedby="burnt-calories-feedback"
+                            id="burnt-calories-input"
+                            min="0"
+                            type="text"
+                            v-model="form.burntCalories"
+                    ></b-form-input>
+                    <b-form-invalid-feedback id="burnt-calories-feedback">
+                        {{ errors[0] }}
+                    </b-form-invalid-feedback>
+                </ValidationProvider>
+            </b-form-group>
 
             <b-form-group label="강도" label-for="intensity-input">
                 <b-form-radio name="intensity-input" v-model="form.intensity" value="0">매우 쉽다
@@ -110,6 +132,8 @@
             count: 0,
             startTime: moment().format(HHmmss),
             finishTime: moment().format(HHmmss),
+            burntCalories: undefined,
+            burntCaloriesEditable: true,
             intensity: 2
         };
     }
@@ -133,26 +157,11 @@
             datetime() {
                 return moment(this.form.date + ' ' + this.form.startTime, YYYYMMDD + ' ' + HHmmss);
             },
-            selectedExercise() {
-                return this.exercises.find(exercise => exercise.name === this.form.exerciseName);
-            },
             elapsedTime() {
-                if (this.selectedExercise) {
-                    let startMoment = moment(this.form.startTime, HHmmss);
-                    let finishMoment = moment(this.form.finishTime, HHmmss);
-                    if (finishMoment.isBefore(startMoment)) finishMoment.add(1, 'days');
-                    return finishMoment.diff(startMoment, 'seconds');
-                } else {
-                    return 0;
-                }
-            },
-            burntCalories() {
-                if (this.selectedExercise) {
-                    let burntCalories = this.selectedExercise.met * this.userWeight * (this.elapsedTime / 60 / 60);
-                    return Math.floor(burntCalories * 100) / 100;
-                } else {
-                    return 0;
-                }
+                let startMoment = moment(this.form.startTime, HHmmss);
+                let finishMoment = moment(this.form.finishTime, HHmmss);
+                if (finishMoment.isBefore(startMoment)) finishMoment.add(1, 'days');
+                return finishMoment.diff(startMoment, 'seconds');
             }
         },
         methods: {
@@ -167,6 +176,8 @@
                     if (fitness.exerciseId) {
                         let exercise = this.exercises.find(exercise => exercise.id === fitness.exerciseId);
                         this.form.exerciseName = (exercise) ? exercise.name : '존재하지 않는 운동';
+                    } else if (fitness.exercise) {
+                        this.form.exerciseName = fitness.exercise.name;
                     }
                     if (fitness.count) {
                         this.form.count = fitness.count;
@@ -176,9 +187,27 @@
                             .add(fitness.elapsedTime, 'seconds')
                             .format(HHmmss);
                     }
+                    if (fitness.burntCalories) {
+                        this.form.burntCalories = fitness.burntCalories;
+                    }
                 }
 
                 this.$refs['form-validation'].reset();
+            },
+            findSelectedExercise() {
+                return this.exercises.find(exercise => exercise.name === this.form.exerciseName);
+            },
+            updateBurntCalories() {
+                let exercise = this.findSelectedExercise();
+                if (exercise) {
+                    let burntCalories = exercise.met * this.userWeight * (this.elapsedTime / 60 / 60);
+                    burntCalories = Math.floor(burntCalories * 100) / 100;
+                    this.form.burntCalories = burntCalories;
+                    this.form.burntCaloriesEditable = false;
+                } else {
+                    this.form.burntCalories = undefined;
+                    this.form.burntCaloriesEditable = true;
+                }
             },
             ok() {
                 this.$refs['form-validation'].validate()
@@ -186,12 +215,17 @@
                         if (passed) {
                             let date = this.datetime.toISOString();
                             let body = {
-                                exerciseId: this.selectedExercise.id,
-                                burntCalories: this.burntCalories,
+                                burntCalories: this.form.burntCalories,
                                 count: this.form.count,
                                 elapsedTime: this.elapsedTime,
                                 intensity: this.form.intensity
                             };
+                            let exercise = this.findSelectedExercise();
+                            if (exercise) {
+                                body.exerciseId = exercise.id;
+                            } else {
+                                body.exercise = {name: this.form.exerciseName};
+                            }
                             this.$emit('ok', date, body);
                         }
                     });
