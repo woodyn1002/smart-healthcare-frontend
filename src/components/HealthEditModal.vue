@@ -1,5 +1,5 @@
 <template>
-    <b-modal @hidden="initializeForm()" ref="modal" static title="건강 정보 입력">
+    <b-modal @show="initializeForm()" ref="modal" static title="건강 정보 입력">
         <ValidationObserver ref="form-validation">
             <b-form @submit.stop.prevent="editHealthData()">
                 <b-row class="mb-3">
@@ -298,15 +298,20 @@
                 this.$refs['modal'].hide();
             },
             initializeForm() {
-                this.form = (this.healthData) ? clone(this.healthData) : defaultFormData();
+                let newForm;
 
-                if (!this.form.birthdate) this.form.birthdate = {};
-                if (!this.form.bloodPressure) this.form.bloodPressure = {};
-
-                if (this.form.birthdate.date) {
-                    this.form.birthdate.date = moment(this.healthData.birthdate.date).format(YYYYMMDD);
+                if (this.healthData) {
+                    newForm = clone(this.healthData);
+                    if (!newForm.birthdate) newForm.birthdate = {};
+                    if (!newForm.bloodPressure) newForm.bloodPressure = {};
+                } else {
+                    newForm = defaultFormData();
+                }
+                if (newForm.birthdate.date) {
+                    newForm.birthdate.date = moment(newForm.birthdate.date).format(YYYYMMDD);
                 }
 
+                this.form = newForm;
                 this.$refs['form-validation'].reset();
             },
             handleOk(event) {
@@ -318,7 +323,7 @@
                     .then(passed => {
                         if (passed) {
                             let date = moment().toISOString();
-                            let body = this.form;
+                            let body = this.formToBody(this.form);
 
                             HealthDataService.createHealthData(this.currentUser.id, date, body)
                                 .then(healthData => {
@@ -329,6 +334,25 @@
                                 .catch(err => this.handleError(err));
                         }
                     });
+            },
+            formToBody(form) {
+                const isEmpty = obj => Object.keys(obj).length === 0;
+
+                let body = {};
+                if (form.sex) body.sex = form.sex;
+                if (form.birthdate && !isEmpty(form.birthdate)) body.birthdate = form.birthdate;
+                if (form.height) body.height = form.height;
+                if (form.weight) body.weight = form.weight;
+                if (form.ldlCholesterol) body.ldlCholesterol = form.ldlCholesterol;
+                if (form.waist) body.waist = form.waist;
+                if (form.bloodPressure && !isEmpty(form.bloodPressure)) body.bloodPressure = form.bloodPressure;
+                if (form.bloodPressureMedicine) body.bloodPressureMedicine = form.bloodPressureMedicine;
+                if (form.neutralFat) body.neutralFat = form.neutralFat;
+                if (form.neutralFatMedicine) body.neutralFatMedicine = form.neutralFatMedicine;
+                if (form.hdlCholesterol) body.hdlCholesterol = form.hdlCholesterol;
+                if (form.fastingBloodSugar) body.fastingBloodSugar = form.fastingBloodSugar;
+                if (form.fastingBloodSugarMedicine) body.fastingBloodSugarMedicine = this.form.fastingBloodSugarMedicine;
+                return body;
             },
             handleError(error) {
                 let alerts = this.$refs['error-alerts'];

@@ -1,17 +1,7 @@
 import * as apiClient from "@/api-client";
 
-function resolveEmptyObjects(healthData) {
-    if (!healthData.birthdate) healthData.birthdate = {};
-    if (!healthData.bloodPressure) healthData.bloodPressure = {};
-    return healthData;
-}
-
 export function getHealthDataList(userId, params) {
-    return apiClient.request('get', `/users/${userId}/health-data`, {params})
-        .then(healthDataList => {
-            healthDataList.forEach(healthData => resolveEmptyObjects(healthData));
-            return healthDataList;
-        });
+    return apiClient.request('get', `/users/${userId}/health-data`, {params});
 }
 
 export function getLatestHealthData(userId) {
@@ -24,23 +14,20 @@ export function getLatestHealthData(userId) {
             else
                 healthData = healthDataList[0];
 
-            return resolveEmptyObjects(healthData);
+            return healthData;
         });
 }
 
 export function getHealthData(userId, date) {
-    return apiClient.request('get', `/users/${userId}/health-data/${date}`)
-        .then(healthData => resolveEmptyObjects(healthData));
+    return apiClient.request('get', `/users/${userId}/health-data/${date}`);
 }
 
 export function createHealthData(userId, date, body) {
-    return apiClient.request('post', `/users/${userId}/health-data/${date}`, {body})
-        .then(healthData => resolveEmptyObjects(healthData));
+    return apiClient.request('post', `/users/${userId}/health-data/${date}`, {body});
 }
 
 export function updateHealthData(userId, date, body) {
-    return apiClient.request('put', `/users/${userId}/health-data/${date}`, {body})
-        .then(healthData => resolveEmptyObjects(healthData));
+    return apiClient.request('put', `/users/${userId}/health-data/${date}`, {body});
 }
 
 export function deleteHealthData(userId, date) {

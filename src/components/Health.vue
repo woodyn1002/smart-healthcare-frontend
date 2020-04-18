@@ -55,67 +55,68 @@
                                         <template v-else>-</template>
                                     </template>
                                     <template v-slot:cell(waist)="data">
-                                <span id="waist">
-                                    <template v-if="data.value">
-                                        {{ data.value }}cm
-                                        <template v-if="healthData.abnormalFields.includes('waist')">
-                                            <b-badge class="ml-1" variant="danger">비정상</b-badge>
-                                        </template>
-                                    </template>
-                                    <template v-else>-</template>
-                                </span>
+                                        <span id="waist">
+                                            <template v-if="data.value">
+                                                {{ data.value }}cm
+                                                <template v-if="healthData.abnormalFields.includes('waist')">
+                                                    <b-badge class="ml-1" variant="danger">비정상</b-badge>
+                                                </template>
+                                            </template>
+                                            <template v-else>-</template>
+                                        </span>
                                         <b-tooltip target="waist">
                                             남자 90cm, 여자 85cm 이상 비정상
                                         </b-tooltip>
                                     </template>
                                     <template v-slot:cell(bloodPressure)="data">
-                                <span id="blood-pressure">
-                                    <template v-if="data.value && data.value.min && data.value.max">
-                                        {{ data.value.min }}~{{ data.value.max }}mmHg
-                                        <template v-if="healthData.abnormalFields.includes('bloodPressure')">
-                                            <b-badge class="ml-1" variant="danger">비정상</b-badge>
-                                        </template>
-                                    </template>
-                                    <template v-else>-</template>
-                                </span>
+                                        <span id="blood-pressure">
+                                            <template v-if="data.value && data.value.min && data.value.max">
+                                                {{ data.value.min }}~{{ data.value.max }}mmHg
+                                                <template v-if="healthData.abnormalFields.includes('bloodPressure')">
+                                                    <b-badge class="ml-1" variant="danger">비정상</b-badge>
+                                                </template>
+                                            </template>
+                                            <template v-else>-</template>
+                                        </span>
                                         <b-tooltip target="blood-pressure">130/85mmHg 이상 비정상</b-tooltip>
                                     </template>
                                     <template v-slot:cell(neutralFat)="data">
-                                <span id="neutral-fat">
-                                    <template v-if="data.value">
-                                        {{ data.value }}mg/DI
-                                        <template v-if="healthData.abnormalFields.includes('neutralFat')">
-                                            <b-badge class="ml-1" variant="danger">비정상</b-badge>
-                                        </template>
-                                    </template>
-                                    <template v-else>-</template>
-                                </span>
+                                        <span id="neutral-fat">
+                                            <template v-if="data.value">
+                                                {{ data.value }}mg/DI
+                                                <template v-if="healthData.abnormalFields.includes('neutralFat')">
+                                                    <b-badge class="ml-1" variant="danger">비정상</b-badge>
+                                                </template>
+                                            </template>
+                                            <template v-else>-</template>
+                                        </span>
                                         <b-tooltip target="neutral-fat">150mg/DI 이상 비정상</b-tooltip>
                                     </template>
                                     <template v-slot:cell(hdlCholesterol)="data">
-                                <span id="hdl-cholesterol">
-                                    <template v-if="data.value">
-                                        {{ data.value }}mg/DI
-                                        <template v-if="healthData.abnormalFields.includes('hdlCholesterol')">
-                                            <b-badge class="ml-1" variant="danger">비정상</b-badge>
-                                        </template>
-                                    </template>
-                                    <template v-else>-</template>
-                                </span>
+                                        <span id="hdl-cholesterol">
+                                            <template v-if="data.value">
+                                                {{ data.value }}mg/DI
+                                                <template v-if="healthData.abnormalFields.includes('hdlCholesterol')">
+                                                    <b-badge class="ml-1" variant="danger">비정상</b-badge>
+                                                </template>
+                                            </template>
+                                            <template v-else>-</template>
+                                        </span>
                                         <b-tooltip target="hdl-cholesterol">
                                             남자 40mg/DI, 여자 50mg/DI 미만 비정상
                                         </b-tooltip>
                                     </template>
                                     <template v-slot:cell(fastingBloodSugar)="data">
-                                <span id="fasting-blood-sugar">
-                                    <template v-if="data.value">
-                                        {{ data.value }}mg/DI
-                                        <template v-if="healthData.abnormalFields.includes('fastingBloodSugar')">
-                                            <b-badge class="ml-1" variant="danger">비정상</b-badge>
-                                        </template>
-                                    </template>
-                                    <template v-else>-</template>
-                                </span>
+                                        <span id="fasting-blood-sugar">
+                                            <template v-if="data.value">
+                                                {{ data.value }}mg/DI
+                                                <template
+                                                        v-if="healthData.abnormalFields.includes('fastingBloodSugar')">
+                                                    <b-badge class="ml-1" variant="danger">비정상</b-badge>
+                                                </template>
+                                            </template>
+                                            <template v-else>-</template>
+                                        </span>
                                         <b-tooltip target="fasting-blood-sugar">
                                             100mg/DI 이상 비정상
                                         </b-tooltip>
@@ -161,32 +162,7 @@
                     {key: 'hdlCholesterol', label: '고밀도 콜레스테롤'},
                     {key: 'fastingBloodSugar', label: '공복혈당'}
                 ],
-                healthData: {
-                    sex: undefined,
-                    birthdate: {
-                        date: undefined,
-                        isLunar: undefined
-                    },
-                    height: undefined,
-                    weight: undefined,
-                    ldlCholesterol: undefined,
-                    waist: undefined,
-                    bloodPressure: {
-                        min: undefined,
-                        max: undefined,
-                    },
-                    bloodPressureMedicine: undefined,
-                    neutralFat: undefined,
-                    neutralFatMedicine: undefined,
-                    hdlCholesterol: undefined,
-                    fastingBloodSugar: undefined,
-                    fastingBloodSugarMedicine: undefined,
-                    age: undefined,
-                    bmr: undefined,
-                    bmi: undefined,
-                    bmiState: undefined,
-                    abnormalFields: []
-                },
+                healthData: undefined,
                 bmiStates: {
                     underweight: 'underweight',
                     normal: 'normal',
