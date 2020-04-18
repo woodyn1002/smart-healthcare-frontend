@@ -38,44 +38,88 @@
 
                 <hr class="mt-2 mb-3"/>
                 <ValidationObserver v-slot="{passed}">
-                    <b-form inline>
-                        <label class="mr-2 d-none d-md-inline" for="new-dish-food-input" style="font-size: 0.9rem;">
-                            음식 추가:
-                        </label>
-                        <ValidationProvider
-                                :rules="`oneOf:${foodOptions.join(',')}|required`"
-                                ref="new-dish-food-name-validation"
-                                slim
-                        >
-                            <b-input
-                                    class="mb-2 mb-md-0 mr-0 mr-md-2"
-                                    id="new-dish-food-input"
-                                    list="food-list"
-                                    placeholder="음식 이름"
-                                    size="sm"
-                                    type="search"
-                                    v-model="form.newDish.option"
-                            ></b-input>
-                        </ValidationProvider>
-                        <b-datalist :options="foodOptions" id="food-list"></b-datalist>
-
-                        <ValidationProvider
-                                immediate
-                                ref="new-dish-amount-validation"
-                                rules="gt:0|required"
-                        >
-                            <b-form-spinbutton
-                                    class="mr-3"
-                                    id="new-dish-amount-input"
-                                    inline
-                                    min="0"
-                                    size="sm"
-                                    step="0.25"
-                                    v-model="form.newDish.amount"
-                            ></b-form-spinbutton>
-                        </ValidationProvider>
-
-                        <b-button :disabled="!passed" @click="addDish()" class="ml-auto" size="sm">추가</b-button>
+                    <b-form>
+                        <b-container class="p-0">
+                            <b-row class="mb-2">
+                                <b-col cols="3">
+                                    <label for="new-dish-food-calories-input" style="font-size: 0.9rem;">
+                                        음식
+                                    </label>
+                                </b-col>
+                                <b-col>
+                                    <ValidationProvider
+                                            ref="new-dish-food-name-validation"
+                                            rules="required"
+                                            slim
+                                    >
+                                        <b-input
+                                                @change="onUpdateFoodOption"
+                                                id="new-dish-food-input"
+                                                list="food-list"
+                                                placeholder="음식 이름"
+                                                size="sm"
+                                                type="search"
+                                                v-model="form.newDish.foodName"
+                                        ></b-input>
+                                    </ValidationProvider>
+                                    <b-datalist :options="foodOptions" id="food-list"></b-datalist>
+                                </b-col>
+                            </b-row>
+                            <b-row class="mb-2">
+                                <b-col cols="3">
+                                    <label for="new-dish-food-calories-input" style="font-size: 0.9rem;">
+                                        열량
+                                    </label>
+                                </b-col>
+                                <b-col>
+                                    <ValidationProvider
+                                            immediate
+                                            ref="new-dish-food-calories-validation"
+                                            rules="gt:0|required"
+                                            slim
+                                    >
+                                        <b-input
+                                                :disabled="!form.newDish.foodCaloriesEditable"
+                                                id="new-dish-food-calories-input"
+                                                placeholder="열량 (kcal)"
+                                                size="sm"
+                                                type="number"
+                                                v-model="form.newDish.foodCalories"
+                                        ></b-input>
+                                    </ValidationProvider>
+                                </b-col>
+                            </b-row>
+                            <b-row>
+                                <b-col cols="3">
+                                    <label class="mr-2" for="new-dish-amount-input" style="font-size: 0.9rem;">
+                                        양
+                                    </label>
+                                </b-col>
+                                <b-col>
+                                    <ValidationProvider
+                                            immediate
+                                            ref="new-dish-amount-validation"
+                                            rules="gt:0|required"
+                                    >
+                                        <b-form-spinbutton
+                                                id="new-dish-amount-input"
+                                                inline
+                                                min="0"
+                                                size="sm"
+                                                step="0.25"
+                                                v-model="form.newDish.amount"
+                                        ></b-form-spinbutton>
+                                    </ValidationProvider>
+                                    <label class="ml-1 mr-2 d-none d-md-inline" for="new-dish-amount-input"
+                                           style="font-size: 0.9rem;">
+                                        인분
+                                    </label>
+                                    <b-button :disabled="!passed" @click="addDish()" class="float-right" size="sm">음식
+                                        추가
+                                    </b-button>
+                                </b-col>
+                            </b-row>
+                        </b-container>
                     </b-form>
                 </ValidationObserver>
             </b-card>
@@ -117,7 +161,6 @@
 <script>
     import moment from "moment";
     import {extend, ValidationObserver, ValidationProvider} from "vee-validate";
-    import {oneOf} from "vee-validate/dist/rules";
     import {HHmmss, YYYYMMDD} from "@/utils/time-formatter";
     import * as FoodService from "../services/food";
 
@@ -127,7 +170,6 @@
         },
         params: ['value']
     });
-    extend('oneOf', oneOf);
 
     function defaultFormData() {
         return {
@@ -138,6 +180,8 @@
             dishes: [],
             newDish: {
                 foodName: '',
+                foodCalories: undefined,
+                foodCaloriesEditable: true,
                 amount: 1
             }
         };
@@ -188,9 +232,10 @@
                     }
                     if (meal.dishes) {
                         for (let dish of meal.dishes) {
-                            let food = this.foods.find(food => food.id === dish.foodId);
-                            dish.food = food;
-                            dish.totalCalories = food.calories * dish.amount;
+                            if (!dish.food) {
+                                dish.food = this.foods.find(food => food.id === dish.foodId);
+                            }
+                            dish.totalCalories = dish.food.calories * dish.amount;
 
                             this.form.dishes.push(dish);
                         }
@@ -198,12 +243,25 @@
                 }
 
                 this.$refs['new-dish-food-name-validation'].reset();
+                this.$refs['new-dish-food-calories-validation'].reset();
+            },
+            onUpdateFoodOption() {
+                let food = this.foods.find(food => food.name === this.form.newDish.foodName);
+                if (food) {
+                    this.form.newDish.foodCaloriesEditable = false;
+                    this.form.newDish.foodCalories = food.calories;
+                } else {
+                    this.form.newDish.foodCaloriesEditable = true;
+                    this.form.newDish.foodCalories = undefined;
+                }
             },
             addDish() {
                 if (this.form.newDish.amount <= 0) return alert('알맞는 양을 입력해주세요!');
 
-                let food = this.foods.find(food => food.name === this.form.newDish.option);
-                if (!food) return alert('음식을 찾을 수 없습니다!');
+                let food = this.foods.find(food => food.name === this.form.newDish.foodName);
+                if (!food) {
+                    food = {name: this.form.newDish.foodName, calories: this.form.newDish.foodCalories};
+                }
 
                 let amount = this.form.newDish.amount;
                 this.form.dishes.push({
@@ -214,11 +272,14 @@
                 });
 
                 this.form.newDish = {
-                    option: '',
+                    foodName: '',
+                    foodCalories: undefined,
+                    foodCaloriesEditable: true,
                     amount: 1
                 };
 
                 this.$refs['new-dish-food-name-validation'].reset();
+                this.$refs['new-dish-food-calories-validation'].reset();
             },
             removeDish(dish) {
                 this.form.dishes.splice(this.form.dishes.indexOf(dish), 1);
@@ -237,8 +298,13 @@
                 };
                 if (this.form.location)
                     body.location = this.form.location;
-                for (let dish of this.form.dishes)
-                    body.dishes.push({foodId: dish.foodId, amount: dish.amount});
+                for (let dish of this.form.dishes) {
+                    if (dish.foodId) {
+                        body.dishes.push({foodId: dish.foodId, amount: dish.amount});
+                    } else {
+                        body.dishes.push({food: dish.food, amount: dish.amount});
+                    }
+                }
 
                 this.$emit('ok', date, body);
             },
