@@ -14,7 +14,9 @@
 
         <template v-if="recognizing.state >= states.uploading">
             <hr/>
-            <b-img :src="recognizing.fileSrc" class="mb-3" fluid></b-img>
+            <div class="d-flex justify-content-center">
+                <b-img :src="recognizing.fileSrc" class="mb-3" fluid></b-img>
+            </div>
         </template>
 
         <template v-if="recognizing.state === states.finished">
