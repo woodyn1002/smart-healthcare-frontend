@@ -190,6 +190,7 @@
                     if (fitness.burntCalories) {
                         this.form.burntCalories = fitness.burntCalories;
                     }
+                    this.updateBurntCalories();
                 }
 
                 this.$refs['form-validation'].reset();
