@@ -59,6 +59,8 @@
 <script>
     import * as timeFormatter from "../utils/time-formatter";
     import moment from "moment";
+    import "@tensorflow/tfjs";
+    import * as tmPose from "@teachablemachine/pose";
     import * as ExerciseService from "../services/exercise";
     import ErrorAlerts from "@/components/ErrorAlerts";
 
@@ -67,6 +69,7 @@
             state: 'loadingCamera',
             mediaStream: null,
             selectedExerciseName: '',
+            status: null,
             count: 0,
             startMoment: null,
             timer: null,
@@ -74,6 +77,9 @@
             finishedWithNoCount: false
         }
     }
+
+    const modelUrl = process.env.VUE_APP_BACKEND_URL + '/ai/exercise-recognizing/model';
+    const metadataUrl = process.env.VUE_APP_BACKEND_URL + '/ai/exercise-recognizing/metadata';
 
     export default {
         name: "fitness-recognize-exercise-modal",
@@ -89,6 +95,8 @@
                     recognizing: 'recognizing',
                     finished: 'finished'
                 },
+                model: undefined,
+                maxPredictions: 0,
                 recognizing: defaultRecognizingData()
             }
         },
@@ -113,12 +121,15 @@
                 this.$refs['modal'].show();
 
                 navigator.mediaDevices.getUserMedia({video: true})
-                    .then(mediaStream => {
+                    .then(async mediaStream => {
                         this.recognizing.mediaStream = mediaStream;
 
                         this.$refs.video.srcObject = mediaStream;
                         this.$refs.video.play();
                         this.$refs.video.classList.remove('d-none');
+
+                        this.model = await tmPose.load(modelUrl, metadataUrl);
+                        this.maxPredictions = this.model.getTotalClasses();
 
                         this.recognizing.state = this.states.ready;
                     })
@@ -145,6 +156,41 @@
                 this.recognizing.startMoment = moment();
                 this.recognizing.elapsedTime = 0;
                 this.recognizing.timer = setInterval(() => this.recognizing.elapsedTime++, 1000);
+
+                this.recognizing.status = "ready";
+                window.requestAnimationFrame(this.loop);
+            },
+            async loop() {
+                if (this.recognizing.state === this.states.recognizing) {
+                    await this.predict();
+                    setTimeout(window.requestAnimationFrame(this.loop), 500);
+                }
+            },
+            async predict() {
+                const {posenetOutput} = await this.model.estimatePose(this.$refs.video);
+                const prediction = await this.model.predict(posenetOutput);
+
+                if (prediction[0].probability.toFixed(2) > 0.90) {
+                    if (this.recognizing.status === "push") {
+                        this.recognizing.count++;
+                        // var audio = new Audio(count%10+'.mp3');
+                        // audio.play();
+                    }
+                    this.recognizing.status = "ready"
+                } else if (prediction[1].probability.toFixed(2) > 0.90) {
+                    this.recognizing.status = "push"
+                } else if (prediction[2].probability.toFixed(2) > 0.90) {
+                    if (this.recognizing.status === "push" || this.recognizing.status === "ready") {
+                        // var audio = new Audio('bent.mp3');
+                        // audio.play();
+                    }
+                    this.recognizing.status = "bent"
+                }
+                for (let i = 0; i < this.maxPredictions; i++) {
+                    const classPrediction =
+                        prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                    console.debug(classPrediction);
+                }
             },
             finishExercise() {
                 clearInterval(this.recognizing.timer);
