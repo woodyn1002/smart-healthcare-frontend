@@ -80,6 +80,11 @@
         }
     }
 
+    const supportedExercises = [
+        'knee-push-up',
+        'squat',
+        'standing-side-crunch'
+    ]
     const modelUrls = {
         'knee-push-up': process.env.VUE_APP_BACKEND_URL + '/ai/exercise-recognizing/knee-push-up',
         'squat': process.env.VUE_APP_BACKEND_URL + '/ai/exercise-recognizing/squat',
@@ -304,7 +309,9 @@
             ExerciseService.getExercises()
                 .then(exercises => {
                     this.exercises = exercises;
-                    this.exerciseOptions = this.exercises.map(exercise => exercise.name);
+                    this.exerciseOptions = this.exercises
+                        .filter(exercise => supportedExercises.includes(exercise.id))
+                        .map(exercise => exercise.name);
                 })
                 .catch(err => this.handleError(err));
         }
