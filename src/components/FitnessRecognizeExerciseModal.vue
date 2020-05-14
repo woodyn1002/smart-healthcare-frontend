@@ -213,8 +213,8 @@
                     case 'knee-push-up':
                         if (prediction[0].probability.toFixed(2) > 0.90) {
                             if (this.status === "push") {
-                                this.count++
-                                audio = new Audio(sounds[this.count % 10]);
+                                this.recognizing.count++
+                                audio = new Audio(sounds[this.recognizing.count % 10]);
                                 audio.play();
                             }
                             this.status = "ready"
@@ -231,8 +231,8 @@
                     case 'squat':
                         if (prediction[0].probability.toFixed(2) > 0.90) {
                             if (this.status === "squat") {
-                                this.count++
-                                audio = new Audio(sounds[this.count % 10]);
+                                this.recognizing.count++
+                                audio = new Audio(sounds[this.recognizing.count % 10]);
                                 audio.play();
                             }
                             this.status = "stand"
@@ -249,8 +249,8 @@
                     case 'standing-side-crunch':
                         if (prediction[0].probability.toFixed(2) > 0.90) {
                             if (this.status === "Crunch") {
-                                this.count++
-                                audio = new Audio(sounds[this.count % 10]);
+                                this.recognizing.count++
+                                audio = new Audio(sounds[this.recognizing.count % 10]);
                                 audio.play();
                             }
                             this.status = "stand"
