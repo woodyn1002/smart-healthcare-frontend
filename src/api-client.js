@@ -31,6 +31,7 @@ export function request(method, path, options) {
     if (options) {
         if (options.params) config.params = options.params;
         if (options.body) config.data = options.body;
+        if (options.headers) config.headers = {...config.headers, ...options.headers};
     }
 
     return axios(config)

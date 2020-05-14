@@ -117,7 +117,8 @@
                         this.recognizing.state = this.states.finished;
 
                         this.foods = foods;
-                    });
+                    })
+                    .catch(err => console.log(err));
             },
             confirmFoods() {
                 let date = this.recognizing.date;
