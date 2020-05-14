@@ -56,6 +56,8 @@
 </template>
 
 <script>
+    import * as FoodRecognizingService from "../services/food-recognizing";
+
     function defaultRecognizingData() {
         return {
             state: 0,
@@ -108,15 +110,14 @@
                 fileReader.onload = (e) => this.recognizing.fileSrc = e.target.result;
                 fileReader.readAsDataURL(this.recognizing.file);
 
-                setTimeout(() => {
-                    this.recognizing.state = this.states.estimating;
-
-                    setTimeout(() => {
+                let formData = new FormData();
+                formData.append('imageFile', this.recognizing.file);
+                FoodRecognizingService.recognize(formData)
+                    .then(foods => {
                         this.recognizing.state = this.states.finished;
 
-                        this.foods = [{id: 'kimchi-soup', name: '김치찌개', calories: 456}];
-                    }, 500);
-                }, 1000);
+                        this.foods = foods;
+                    });
             },
             confirmFoods() {
                 let date = this.recognizing.date;
