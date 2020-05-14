@@ -27,7 +27,9 @@
                 <b-form class="justify-content-center" inline>
                     <b-select :options="exerciseOptions" class="mr-2"
                               v-model="recognizing.selectedExerciseName"></b-select>
-                    <b-button @click="startExercise()" variant="primary">시작</b-button>
+                    <b-button :disabled="selectedExercise === undefined" @click="startExercise()" variant="primary">
+                        시작
+                    </b-button>
                 </b-form>
             </template>
             <template v-else-if="recognizing.state === states.recognizing">
