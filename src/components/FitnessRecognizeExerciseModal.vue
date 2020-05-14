@@ -78,8 +78,25 @@
         }
     }
 
-    const modelUrl = process.env.VUE_APP_BACKEND_URL + '/ai/exercise-recognizing/model';
-    const metadataUrl = process.env.VUE_APP_BACKEND_URL + '/ai/exercise-recognizing/metadata';
+    const modelUrls = {
+        'knee-push-up': process.env.VUE_APP_BACKEND_URL + '/ai/exercise-recognizing/knee-push-up',
+        'squat': process.env.VUE_APP_BACKEND_URL + '/ai/exercise-recognizing/squat',
+        'standing-side-crunch': process.env.VUE_APP_BACKEND_URL + '/ai/exercise-recognizing/standing-side-crunch'
+    }
+
+    const sounds = {
+        '0': require('@/assets/sounds/0.mp3'),
+        '1': require('@/assets/sounds/1.mp3'),
+        '2': require('@/assets/sounds/2.mp3'),
+        '3': require('@/assets/sounds/3.mp3'),
+        '4': require('@/assets/sounds/4.mp3'),
+        '5': require('@/assets/sounds/5.mp3'),
+        '6': require('@/assets/sounds/6.mp3'),
+        '7': require('@/assets/sounds/7.mp3'),
+        '8': require('@/assets/sounds/8.mp3'),
+        '9': require('@/assets/sounds/9.mp3'),
+        'bent': require('@/assets/sounds/bent.mp3')
+    }
 
     export default {
         name: "fitness-recognize-exercise-modal",
@@ -97,6 +114,7 @@
                 },
                 model: undefined,
                 maxPredictions: 0,
+                webcam: undefined,
                 recognizing: defaultRecognizingData()
             }
         },
@@ -121,20 +139,18 @@
                 this.$refs['modal'].show();
 
                 navigator.mediaDevices.getUserMedia({video: true})
-                    .then(async mediaStream => {
+                    .then(mediaStream => {
                         this.recognizing.mediaStream = mediaStream;
 
                         this.$refs.video.srcObject = mediaStream;
                         this.$refs.video.play();
                         this.$refs.video.classList.remove('d-none');
 
-                        this.model = await tmPose.load(modelUrl, metadataUrl);
-                        this.maxPredictions = this.model.getTotalClasses();
-
                         this.recognizing.state = this.states.ready;
                     })
                     .catch(err => {
                         this.recognizing.state = this.states.cameraNotFound;
+
                         console.error(err);
                     });
             },
@@ -151,40 +167,98 @@
                 }
             },
             startExercise() {
-                this.recognizing.state = this.states.recognizing;
-                this.recognizing.count = 0;
-                this.recognizing.startMoment = moment();
-                this.recognizing.elapsedTime = 0;
-                this.recognizing.timer = setInterval(() => this.recognizing.elapsedTime++, 1000);
+                let modelUrl = modelUrls[this.selectedExercise.id];
+                tmPose.load(modelUrl + '/model', modelUrl + '/metadata')
+                    .then(async model => {
+                        this.model = model;
+                        this.maxPredictions = this.model.getTotalClasses();
 
-                this.recognizing.status = "ready";
-                window.requestAnimationFrame(this.loop);
+                        // Convenience function to setup a webcam
+                        const size = 200;
+                        const flip = true; // whether to flip the webcam
+                        this.webcam = new tmPose.Webcam(size, size, flip); // width, height, flip
+                        await this.webcam.setup(); // request access to the webcam
+                        await this.webcam.play();
+
+                        this.recognizing.state = this.states.recognizing;
+                        this.recognizing.count = 0;
+                        this.recognizing.startMoment = moment();
+                        this.recognizing.elapsedTime = 0;
+                        this.recognizing.timer = setInterval(() => this.recognizing.elapsedTime++, 1000);
+
+                        this.recognizing.status = "ready";
+                        window.requestAnimationFrame(this.loop);
+                    });
             },
             async loop() {
                 if (this.recognizing.state === this.states.recognizing) {
+                    this.webcam.update();
                     await this.predict();
-                    setTimeout(window.requestAnimationFrame(this.loop), 500);
+                    window.requestAnimationFrame(this.loop);
                 }
             },
             async predict() {
                 const {posenetOutput} = await this.model.estimatePose(this.$refs.video);
                 const prediction = await this.model.predict(posenetOutput);
 
-                if (prediction[0].probability.toFixed(2) > 0.90) {
-                    if (this.recognizing.status === "push") {
-                        this.recognizing.count++;
-                        // var audio = new Audio(count%10+'.mp3');
-                        // audio.play();
-                    }
-                    this.recognizing.status = "ready"
-                } else if (prediction[1].probability.toFixed(2) > 0.90) {
-                    this.recognizing.status = "push"
-                } else if (prediction[2].probability.toFixed(2) > 0.90) {
-                    if (this.recognizing.status === "push" || this.recognizing.status === "ready") {
-                        // var audio = new Audio('bent.mp3');
-                        // audio.play();
-                    }
-                    this.recognizing.status = "bent"
+                let audio;
+                switch (this.selectedExercise.id) {
+                    case 'knee-push-up':
+                        if (prediction[0].probability.toFixed(2) > 0.90) {
+                            if (this.status === "push") {
+                                this.count++
+                                audio = new Audio(sounds[this.count % 10]);
+                                audio.play();
+                            }
+                            this.status = "ready"
+                        } else if (prediction[1].probability.toFixed(2) > 0.90) {
+                            this.status = "push"
+                        } else if (prediction[2].probability.toFixed(2) > 0.90) {
+                            if (this.status === "push" || this.status === "ready") {
+                                audio = new Audio(sounds['bent']);
+                                audio.play();
+                            }
+                            this.status = "bent"
+                        }
+                        break;
+                    case 'squat':
+                        if (prediction[0].probability.toFixed(2) > 0.90) {
+                            if (this.status === "squat") {
+                                this.count++
+                                audio = new Audio(sounds[this.count % 10]);
+                                audio.play();
+                            }
+                            this.status = "stand"
+                        } else if (prediction[1].probability.toFixed(2) > 0.90) {
+                            this.status = "squat"
+                        } else if (prediction[2].probability.toFixed(2) > 0.90) {
+                            if (this.status === "squat" || this.status === "stand") {
+                                audio = new Audio(sounds['bent']);
+                                audio.play();
+                            }
+                            this.status = "bent"
+                        }
+                        break;
+                    case 'standing-side-crunch':
+                        if (prediction[0].probability.toFixed(2) > 0.90) {
+                            if (this.status === "Crunch") {
+                                this.count++
+                                audio = new Audio(sounds[this.count % 10]);
+                                audio.play();
+                            }
+                            this.status = "stand"
+                        } else if (prediction[1].probability.toFixed(2) > 0.90) {
+                            this.status = "Crunch"
+                        } else if (prediction[2].probability.toFixed(2) > 0.90) {
+                            if (this.status === "Crunch" || this.status === "stand") {
+                                audio = new Audio(sounds['bent']);
+                                audio.play();
+                            }
+                            this.status = "bent"
+                        }
+                        break;
+                    default:
+                        throw new Error('Unsupported exercise');
                 }
                 for (let i = 0; i < this.maxPredictions; i++) {
                     const classPrediction =
