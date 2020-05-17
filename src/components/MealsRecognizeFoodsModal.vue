@@ -20,8 +20,22 @@
         </template>
 
         <template v-if="recognizing.state === states.finished">
-            <p class="lead text-center">인식 결과: {{ recognizing.result.map(it => it.food.name).join(', ') }}</p>
-            <p class="text-center">결과가 옳다면 등록 버튼을 눌러주세요.</p>
+            <div class="text-center">
+                <p class="lead">인식 결과: {{ recognizingResultText }}</p>
+                <ul class="list-inline d-inline-block mb-3" v-if="recognizing.result.length > 0">
+                    <li :key="entry" class="list-inline-item" v-for="entry in recognizing.result">
+                        <b-badge size="large" variant="info">
+                            <span class="px-1"
+                                  style="font-size: 0.9rem; font-weight: normal; display: inline-flex; align-items: center;">
+                                {{ entry.food.name }} ({{ entry.probability.toFixed(2) }}%)
+                                <b-button-close @click="removeFromResult(entry)" class="pb-1 pl-1"
+                                                text-variant="light"/>
+                            </span>
+                        </b-badge>
+                    </li>
+                </ul>
+                <p>결과를 확인하고 등록 버튼을 눌러주세요.</p>
+            </div>
         </template>
 
         <template v-slot:modal-footer="{ cancel }">
@@ -81,6 +95,14 @@
                 recognizing: defaultRecognizingData()
             }
         },
+        computed: {
+            recognizingResultText() {
+                if (this.recognizing.result.length > 0)
+                    return this.recognizing.result.map(it => it.food.name).join(', ');
+                else
+                    return "없음";
+            }
+        },
         methods: {
             resetRecognizingData() {
                 this.recognizing = defaultRecognizingData();
@@ -114,10 +136,14 @@
                 formData.append('imageFile', this.recognizing.file);
                 FoodRecognizingService.recognize(formData)
                     .then(result => {
-                        this.recognizing.state = this.states.finished;
                         this.recognizing.result = result;
+                        this.recognizing.state = this.states.finished;
                     })
                     .catch(err => console.log(err));
+            },
+            removeFromResult(entry) {
+                let index = this.recognizing.result.indexOf(entry);
+                this.recognizing.result.splice(index, 1);
             },
             confirmFoods() {
                 let date = this.recognizing.date;
