@@ -20,7 +20,7 @@
         </template>
 
         <template v-if="recognizing.state === states.finished">
-            <p class="lead text-center">인식 결과: {{ foods.map(food => food.name).join(', ') }}</p>
+            <p class="lead text-center">인식 결과: {{ recognizing.result.map(it => it.food.name).join(', ') }}</p>
             <p class="text-center">결과가 옳다면 등록 버튼을 눌러주세요.</p>
         </template>
 
@@ -64,7 +64,7 @@
             file: null,
             fileSrc: '',
             date: null,
-            foods: []
+            result: []
         }
     }
 
@@ -113,18 +113,17 @@
                 let formData = new FormData();
                 formData.append('imageFile', this.recognizing.file);
                 FoodRecognizingService.recognize(formData)
-                    .then(foods => {
+                    .then(result => {
                         this.recognizing.state = this.states.finished;
-
-                        this.foods = foods;
+                        this.recognizing.result = result;
                     })
                     .catch(err => console.log(err));
             },
             confirmFoods() {
                 let date = this.recognizing.date;
                 let meal = {dishes: []};
-                for (let food of this.foods) {
-                    meal.dishes.push({foodId: food.id, amount: 1});
+                for (let entry of this.recognizing.result) {
+                    meal.dishes.push({foodId: entry.food.id, amount: 1});
                 }
 
                 this.$emit('confirm', date, meal);
