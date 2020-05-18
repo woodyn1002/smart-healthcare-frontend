@@ -129,7 +129,6 @@
                 },
                 model: undefined,
                 maxPredictions: 0,
-                webcam: undefined,
                 recognizing: defaultRecognizingData()
             }
         },
@@ -190,13 +189,6 @@
                         this.model = model;
                         this.maxPredictions = this.model.getTotalClasses();
 
-                        // Convenience function to setup a webcam
-                        const size = 200;
-                        const flip = true; // whether to flip the webcam
-                        this.webcam = new tmPose.Webcam(size, size, flip); // width, height, flip
-                        await this.webcam.setup(); // request access to the webcam
-                        await this.webcam.play();
-
                         this.recognizing.state = this.states.recognizing;
                         this.recognizing.count = 0;
                         this.recognizing.startMoment = moment();
@@ -209,7 +201,6 @@
             },
             async loop() {
                 if (this.recognizing.state === this.states.recognizing) {
-                    this.webcam.update();
                     await this.predict();
                     window.requestAnimationFrame(this.loop);
                 }
