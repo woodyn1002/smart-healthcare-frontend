@@ -146,17 +146,8 @@
                 ></b-form-input>
             </b-form-group>
 
-            <b-form-group label="만족감" label-for="satisfaction-score">
-                <b-form-radio name="satisfaction-score-input" v-model="form.satisfactionScore" value="0">매우 배고프다
-                </b-form-radio>
-                <b-form-radio name="satisfaction-score-input" v-model="form.satisfactionScore" value="1">조금 배고프다
-                </b-form-radio>
-                <b-form-radio name="satisfaction-score-input" v-model="form.satisfactionScore" value="2">보통이다
-                </b-form-radio>
-                <b-form-radio name="satisfaction-score-input" v-model="form.satisfactionScore" value="3">조금 배부르다
-                </b-form-radio>
-                <b-form-radio name="satisfaction-score-input" v-model="form.satisfactionScore" value="4">매우 배부르다
-                </b-form-radio>
+            <b-form-group label="포만감" label-for="satisfaction-score">
+                <b-form-rating id="satisfaction-score" v-model="form.satisfactionStars"></b-form-rating>
             </b-form-group>
         </b-form>
         <b-alert :show="error.showAlert" @dismissed="error.showAlert=false" dismissible fade variant="danger">
@@ -183,7 +174,7 @@
             date: '',
             time: moment().format(HHmmss),
             location: '',
-            satisfactionScore: 2,
+            satisfactionStars: 3,
             dishes: [],
             newDish: {
                 foodName: '',
@@ -234,8 +225,8 @@
                     if (meal.location) {
                         this.form.location = meal.location;
                     }
-                    if (meal.satisfactionScore) {
-                        this.form.satisfactionScore = meal.satisfactionScore;
+                    if (meal.satisfactionScore !== undefined) {
+                        this.form.satisfactionStars = meal.satisfactionScore + 1;
                     }
                     if (meal.dishes) {
                         for (let dish of meal.dishes) {
@@ -309,7 +300,7 @@
 
                 let date = this.datetime.toISOString();
                 let body = {
-                    satisfactionScore: this.form.satisfactionScore,
+                    satisfactionScore: this.form.satisfactionStars - 1,
                     dishes: []
                 };
                 if (this.form.location)
