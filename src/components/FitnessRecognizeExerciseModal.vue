@@ -24,13 +24,13 @@
                 <p class="lead">준비가 완료되었습니다!</p>
                 <p class="mb-1" v-if="recognizing.finishedWithNoCount">운동을 진행하지 않으셨습니다.</p>
                 <p class="mb-1" v-else>운동을 선택해주세요</p>
-                <b-form class="justify-content-center" inline>
-                    <b-select :options="exerciseOptions" class="mr-2"
-                              v-model="recognizing.selectedExerciseName"></b-select>
+                <div class="justify-content-center">
+                    <b-select :options="exerciseOptions" class="mr-2" style="width: 12rem;"
+                              v-model="recognizing.selectedExerciseName"/>
                     <b-button :disabled="selectedExercise === undefined" @click="startExercise()" variant="primary">
                         시작
                     </b-button>
-                </b-form>
+                </div>
             </template>
             <template v-else-if="recognizing.state === states.recognizing">
                 <p class="lead">{{ selectedExercise.name }} 인식 중...</p>
