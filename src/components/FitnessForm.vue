@@ -95,16 +95,8 @@
             </b-form-group>
 
             <b-form-group label="강도" label-for="intensity-input">
-                <b-form-radio name="intensity-input" v-model="form.intensity" value="0">매우 쉽다
-                </b-form-radio>
-                <b-form-radio name="intensity-input" v-model="form.intensity" value="1">조금 쉽다
-                </b-form-radio>
-                <b-form-radio name="intensity-input" v-model="form.intensity" value="2">보통이다
-                </b-form-radio>
-                <b-form-radio name="intensity-input" v-model="form.intensity" value="3">조금 어렵다
-                </b-form-radio>
-                <b-form-radio name="intensity-input" v-model="form.intensity" value="4">매우 어렵다
-                </b-form-radio>
+                <b-form-rating id="intensity-input" v-model="form.intensityStars"
+                ></b-form-rating>
             </b-form-group>
         </b-form>
         <b-alert :show="error.showAlert" @dismissed="error.showAlert=false" dismissible fade variant="danger">
@@ -134,7 +126,7 @@
             finishTime: moment().format(HHmmss),
             burntCalories: undefined,
             burntCaloriesEditable: true,
-            intensity: 2
+            intensityStars: 3
         };
     }
 
@@ -190,6 +182,9 @@
                     if (fitness.burntCalories) {
                         this.form.burntCalories = fitness.burntCalories;
                     }
+                    if (fitness.intensity !== undefined) {
+                        this.form.intensityStars = fitness.intensity + 1;
+                    }
                     this.updateBurntCalories();
                 }
 
@@ -219,7 +214,7 @@
                                 burntCalories: this.form.burntCalories,
                                 count: this.form.count,
                                 elapsedTime: this.elapsedTime,
-                                intensity: this.form.intensity
+                                intensity: this.form.intensityStars - 1
                             };
                             let exercise = this.findSelectedExercise();
                             if (exercise) {
