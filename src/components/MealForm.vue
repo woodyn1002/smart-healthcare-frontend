@@ -13,14 +13,21 @@
                         small
                         sticky-header>
                     <template v-slot:table-colgroup>
-                        <col style="width: 35%;">
-                        <col style="width: 15%;">
                         <col style="width: 30%;">
-                        <col style="width: 20%;">
+                        <col style="width: 30%;">
+                        <col style="width: 25%;">
+                        <col style="width: 15%;">
                     </template>
 
                     <template v-slot:cell(foodName)="data">
                         {{ data.item.food.name }}
+                    </template>
+                    <template v-slot:cell(amount)="data">
+                        <b-button-group size="sm">
+                            <b-button @click="decrementDishAmount(data.item)" variant="light">&lsaquo;</b-button>
+                            <b-button class="p-0" variant="light">{{ data.value.toFixed(2) }}</b-button>
+                            <b-button @click="incrementDishAmount(data.item)" variant="light">&rsaquo;</b-button>
+                        </b-button-group>
                     </template>
                     <template v-slot:cell(totalCalories)="data">
                         {{ data.value }}kcal
@@ -280,6 +287,15 @@
 
                 this.$refs['new-dish-food-name-validation'].reset();
                 this.$refs['new-dish-food-calories-validation'].reset();
+            },
+            incrementDishAmount(dish) {
+                dish.amount += 0.25;
+                dish.totalCalories = dish.food.calories * dish.amount;
+            },
+            decrementDishAmount(dish) {
+                dish.amount -= 0.25;
+                dish.amount = Math.max(dish.amount, 0);
+                dish.totalCalories = dish.food.calories * dish.amount;
             },
             removeDish(dish) {
                 this.form.dishes.splice(this.form.dishes.indexOf(dish), 1);
