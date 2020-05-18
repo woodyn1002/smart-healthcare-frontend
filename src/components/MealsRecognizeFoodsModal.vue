@@ -7,12 +7,12 @@
                     browse-text="불러오기"
                     drop-placeholder="이미지를 드랍하세요"
                     id="file-input"
-                    placeholder="이미지를 업로드하세요"
+                    placeholder="클릭해 이미지를 업로드하세요"
                     v-model="recognizing.file"
             ></b-form-file>
         </b-form>
 
-        <template v-if="recognizing.state >= states.uploading">
+        <template v-if="recognizing.state >= states.estimating">
             <hr/>
             <div class="d-flex justify-content-center">
                 <b-img :src="recognizing.fileSrc" class="mb-3" fluid></b-img>
@@ -46,12 +46,6 @@
             <template v-if="recognizing.state === states.ready">
                 <b-button :disabled="!recognizing.file" @click="handleOk" variant="primary">
                     인식
-                </b-button>
-            </template>
-            <template v-else-if="recognizing.state === states.uploading">
-                <b-button disabled variant="primary">
-                    <b-spinner small></b-spinner>
-                    업로드 중...
                 </b-button>
             </template>
             <template v-else-if="recognizing.state === states.estimating">
@@ -88,9 +82,8 @@
             return {
                 states: {
                     ready: 0,
-                    uploading: 1,
-                    estimating: 2,
-                    finished: 3
+                    estimating: 1,
+                    finished: 2
                 },
                 recognizing: defaultRecognizingData()
             }
@@ -125,7 +118,7 @@
                 }
             },
             recognizeFoods() {
-                this.recognizing.state = this.states.uploading;
+                this.recognizing.state = this.states.estimating;
                 this.recognizing.date = new Date().toISOString();
 
                 const fileReader = new FileReader();
