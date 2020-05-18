@@ -27,7 +27,7 @@
                         <b-badge size="large" variant="info">
                             <span class="px-1"
                                   style="font-size: 0.9rem; font-weight: normal; display: inline-flex; align-items: center;">
-                                {{ entry.food.name }} ({{ entry.probability.toFixed(2) }}%)
+                                {{ entry.food.name }} ({{ (entry.probability * 100).toFixed(1) }}%)
                                 <b-button-close @click="removeFromResult(entry)" class="pb-1 pl-1"
                                                 text-variant="light"/>
                             </span>
