@@ -14,9 +14,9 @@
                         sticky-header>
                     <template v-slot:table-colgroup>
                         <col style="width: 30%;">
-                        <col style="width: 30%;">
-                        <col style="width: 25%;">
-                        <col style="width: 15%;">
+                        <col style="width: 35%;">
+                        <col style="width: 23%;">
+                        <col style="width: 12%;">
                     </template>
 
                     <template v-slot:cell(foodName)="data">
@@ -30,7 +30,8 @@
                         </b-button-group>
                     </template>
                     <template v-slot:cell(totalCalories)="data">
-                        {{ data.value }}kcal
+                        {{ data.value }}
+                        <span class="d-none d-md-inline">kcal</span>
                     </template>
                     <template v-slot:cell(buttons)="data">
                         <b-button @click="removeDish(data.item)" class="m-1" size="sm">
