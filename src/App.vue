@@ -3,7 +3,7 @@
         <b-navbar sticky toggleable="lg" type="light" variant="light">
             <b-container>
                 <b-navbar-brand :to="loggedIn ? '/dashboard' : '/'">
-                    <b-icon-house-fill class="d-md-none"/>
+                    <b-icon-house class="d-md-none mr-1"/>
                     Smart Healthcare
                 </b-navbar-brand>
 
