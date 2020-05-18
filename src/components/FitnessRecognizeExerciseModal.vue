@@ -20,7 +20,7 @@
                 <p class="lead">카메라를 불러올 수 없습니다.</p>
                 <p>촬영 가능한 기기를 사용하고, 권한을 허용해주세요.</p>
             </template>
-            <template v-else-if="recognizing.state === states.ready">
+            <template v-else-if="recognizing.state === states.ready || recognizing.state === states.starting">
                 <p class="lead">준비가 완료되었습니다!</p>
                 <p class="mb-1" v-if="recognizing.finishedWithNoCount">운동을 진행하지 않으셨습니다.</p>
                 <p class="mb-1" v-else>운동을 선택해주세요</p>
@@ -28,12 +28,19 @@
                     <b-select :options="exerciseOptions" class="mr-2" style="width: 12rem;"
                               v-model="recognizing.selectedExerciseName"/>
                     <b-button :disabled="selectedExercise === undefined" @click="startExercise()" variant="primary">
-                        시작
+                        <template v-if="recognizing.state === states.starting">
+                            시작 중...
+                            <b-spinner small></b-spinner>
+                        </template>
+                        <template v-else>시작</template>
                     </b-button>
                 </div>
             </template>
             <template v-else-if="recognizing.state === states.recognizing">
-                <p class="lead">{{ selectedExercise.name }} 인식 중...</p>
+                <p class="lead">
+                    {{ selectedExercise.name }} 인식 중...
+                    <b-spinner style="width: 1.5rem; height: 1.5rem;" type="grow"></b-spinner>
+                </p>
                 <p>{{ formattedElapsedTime }} 소요, {{ recognizing.count }}회 실시</p>
                 <b-button @click="finishExercise()" variant="primary">운동 종료</b-button>
             </template>
@@ -116,6 +123,7 @@
                     loadingCamera: 'loadingCamera',
                     cameraNotFound: 'cameraNotFound',
                     ready: 'ready',
+                    starting: 'starting',
                     recognizing: 'recognizing',
                     finished: 'finished'
                 },
@@ -174,6 +182,8 @@
                 }
             },
             startExercise() {
+                this.recognizing.state = this.states.starting;
+
                 let modelUrl = modelUrls[this.selectedExercise.id];
                 tmPose.load(modelUrl + '/model', modelUrl + '/metadata')
                     .then(async model => {
