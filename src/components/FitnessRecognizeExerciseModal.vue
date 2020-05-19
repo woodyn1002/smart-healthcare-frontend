@@ -239,12 +239,6 @@
                             this.status = "stand"
                         } else if (prediction[1].probability.toFixed(2) > 0.90) {
                             this.status = "squat"
-                        } else if (prediction[2].probability.toFixed(2) > 0.90) {
-                            if (this.status === "squat" || this.status === "stand") {
-                                audio = new Audio(sounds['bent']);
-                                audio.play();
-                            }
-                            this.status = "bent"
                         }
                         break;
                     case 'standing-side-crunch':
