@@ -23,8 +23,10 @@
                 <template v-slot:cell(mealCalories)="data">
                     <span class="text-danger">+{{ data.value }}</span>
                 </template>
-                <template v-slot:cell(burntCalories)="data">
+                <template v-slot:cell(bmr)="data">
                     <span class="text-secondary">-{{ data.item.bmr }}</span>
+                </template>
+                <template v-slot:cell(fitnessCalories)="data">
                     <span class="text-success"> -{{ data.item.fitnessCalories }}</span>
                 </template>
                 <template v-slot:cell(sumOfCalories)="data">
@@ -56,7 +58,8 @@
                 healthSummaryTableFields: [
                     {'key': 'day', 'label': '날짜'},
                     {'key': 'mealCalories', 'label': '섭취 열량'},
-                    {'key': 'burntCalories', 'label': '소모 열량'},
+                    {'key': 'bmr', 'label': '기초대사량'},
+                    {'key': 'fitnessCalories', 'label': '운동 열량'},
                     {'key': 'sumOfCalories', 'label': '계'}
                 ],
                 chartOptions: {
