@@ -27,7 +27,8 @@
                 <div class="justify-content-center">
                     <b-select :options="exerciseOptions" class="mr-2" style="width: 12rem;"
                               v-model="recognizing.selectedExerciseName"/>
-                    <b-button :disabled="selectedExercise === undefined" @click="startExercise()" variant="primary">
+                    <b-button :disabled="selectedExercise === undefined || recognizing.state === states.starting"
+                              @click="startExercise()" variant="primary">
                         <template v-if="recognizing.state === states.starting">
                             시작 중...
                             <b-spinner small></b-spinner>
