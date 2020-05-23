@@ -282,12 +282,12 @@
             },
             incrementDishAmount(dish) {
                 dish.amount += 0.25;
-                dish.totalCalories = dish.food.calories * dish.amount;
+                dish.totalCalories = (dish.food.calories * dish.amount).toFixed(2);
             },
             decrementDishAmount(dish) {
                 dish.amount -= 0.25;
                 dish.amount = Math.max(dish.amount, 0);
-                dish.totalCalories = dish.food.calories * dish.amount;
+                dish.totalCalories = (dish.food.calories * dish.amount).toFixed(2);
             },
             removeDish(dish) {
                 this.form.dishes.splice(this.form.dishes.indexOf(dish), 1);
